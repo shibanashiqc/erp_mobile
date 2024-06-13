@@ -28,14 +28,29 @@ class _SalesOrderState extends State<SalesOrder> {
   bool loading = false;
   DateTime focusedDay = DateTime.now();
   List<Data> data = [];
+  late ScrollController controller;
+  bool isLoad = false;
+  int limit = 10;  
+  // PdfController pdfController;
+  
+    void _scrollListener() {
+  if (controller.position.extentAfter == 0.0) { 
+    limit = limit + 10;  
+    log('Limit: $limit');  
+    loadData();
+  } 
+} 
   
   void loadData ({query = ''}) async
   {
     // loading = true;
-    await context.read<MainCubit>().getSalesOrders(search: query).then((value) {
+    isLoad = true;
+    setState(() {
+    });
+    await context.read<MainCubit>().getSalesOrders(limit:limit, search: query).then((value) {
         setState(() {
           data = value.data!; 
-          loading = false;
+          isLoad = false;
         }); 
       });
      
@@ -45,6 +60,7 @@ class _SalesOrderState extends State<SalesOrder> {
   void initState() { 
     super.initState();
     loadData(); 
+    controller = ScrollController()..addListener(_scrollListener);
   }
 
   @override
@@ -81,139 +97,147 @@ class _SalesOrderState extends State<SalesOrder> {
         }
         
       }, builder: (context, state) {
-        return SingleChildScrollView (
-          child: XContainer(
-              child: loading == true
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Column(
-                        children: [
-                          XInput(
-                            
-                            suffixIcon: const Icon(
-                              Icons.search,
-                              color: ColorConstants.secondaryColor,
-                            ),
-                            hintText: 'Search by name',
-                          ),
-                          ListView.separated(
-                            shrinkWrap: true,
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 10),
-                            itemCount: 10,
-                            itemBuilder: (context, index) {
-                              // return XList(
-                              //   onTap: () {},
-                              //   title: '',
-                              //   subtitle: '',
-                              //   status: 1,
-                              // );
-                            },
-                          ),
-                        ],
-                      ),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        return XContainer(
+            controller: controller,
+            child: loading == true
+                ? Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Column(
                       children: [
                         XInput(
-                          onChanged: (value) {
-                            loadData(query: value); 
-                          },
+                          
                           suffixIcon: const Icon(
                             Icons.search,
                             color: ColorConstants.secondaryColor,
                           ),
-                          hintText: 'Search by name',
+                          hintText: 'Search by order number / phone / email',
                         ),
-                        // TableCalendar(
-                        //   firstDay: DateTime.utc(2010, 10, 16),
-                        //   lastDay: DateTime.utc(2030, 3, 14),
-                        //   focusedDay: focusedDay,
-                        //   onDaySelected: (selectedDay, focusedDay) {
-                        //     focusedDay = selectedDay;
-                        //     setState(() {
-                        //     });  
-                        //   },
-                        // )
-                        
-                        
-                        ListView.separated( 
-                          itemCount: data.length,
-                          separatorBuilder: (context, index) =>
-                                const SizedBox(height: 10),
+                        ListView.separated(
                           shrinkWrap: true,
-                          itemBuilder: (context, index) =>  XCard( 
-                            child: Column(
-                              children: [
-                                Items(
-                                  items: [
-                                    ItemListModel(name: 'DATE', value: data[index].orderDate ?? ''),
-                                    ItemListModel(name: 'PHONE', value: data[index].phone ?? ''), 
-                                    ItemListModel(name: 'SALES ORDER#', value: data[index].id.toString()),
-                                    ItemListModel(name: 'REFERENCE#', value:  data[index].reference ?? ''),
-                                    ItemListModel(name: 'PAID AMOUNT', value: data[index].paidAmount ?? ''),
-                                    ItemListModel(name: 'BALANCE AMOUNT', value: data[index].balanceAmount ?? ''),
-                                    ItemListModel(name: 'CUSTOMER NAME', value: data[index].customer?.name ?? ''),
-                                    ItemListModel(name: 'CREATED AT', value: data[index].createdAt ?? ''), 
-                                  ]
-                                ),  
-                                
-                                
-                                Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text('ACTION', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)) ,
-                                          
-                                          Row( 
-                                            children: [
-                                              InkWell(  
-                                                onTap: () { 
-                                                  context.push('/sales/view_sales_orders', extra: {'extra': data[index]});
-                                                },
-                                                child: const Icon(Icons.edit),
-                                              ),
-                                            ]
-                                          ),
-                                          
-                                        ],
-                                      ),
-                                      
-                                     const SizedBox(height: 10), 
-                                      
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text('VIEW INVOICE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)) ,
-                                          InkWell(
-                                            onTap: () { 
-                                              context.push('/sales/view_invoice');
-                                            },
-                                            child: const Icon(CupertinoIcons.eye),
-                                          ), 
-                                        ],
-                                      ), 
-                                      
-                                    ],
-                                  ),
-                                ),  
-                                
-                                
-                              ],
-                            ),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 10),
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            // return XList(
+                            //   onTap: () {},
+                            //   title: '',
+                            //   subtitle: '',
+                            //   status: 1,
+                            // );
+                          },
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      XInput(
+                        onChanged: (value) {
+                          loadData(query: value); 
+                        },
+                        suffixIcon: const Icon(
+                          Icons.search,
+                          color: ColorConstants.secondaryColor,
+                        ),
+                        hintText: 'Search by order number / phone / email',
+                      ),
+                      // TableCalendar(
+                      //   firstDay: DateTime.utc(2010, 10, 16),
+                      //   lastDay: DateTime.utc(2030, 3, 14),
+                      //   focusedDay: focusedDay,
+                      //   onDaySelected: (selectedDay, focusedDay) {
+                      //     focusedDay = selectedDay;
+                      //     setState(() {
+                      //     });  
+                      //   },
+                      // )
+                      
+                      
+                      ListView.separated( 
+                        itemCount: data.length,
+                        separatorBuilder: (context, index) =>
+                              const SizedBox(height: 10),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(), 
+                        itemBuilder: (context, index) =>  XCard( 
+                          child: Column(
+                            children: [
+                              Items(
+                                items: [
+                                  ItemListModel(name: 'DATE', value: data[index].orderDate ?? ''),
+                                  ItemListModel(name: 'PHONE', value: data[index].phone ?? ''), 
+                                  ItemListModel(name: 'SALES ORDER#', value: data[index].id.toString()),
+                                  ItemListModel(name: 'REFERENCE#', value:  data[index].reference ?? ''),
+                                  ItemListModel(name: 'PAID AMOUNT', value: data[index].paidAmount ?? ''),
+                                  ItemListModel(name: 'BALANCE AMOUNT', value: data[index].balanceAmount ?? ''),
+                                  ItemListModel(name: 'CUSTOMER NAME', value: data[index].customer?.name ?? ''),
+                                  ItemListModel(name: 'BILL DATE', value: data[index].createdAt ?? ''), 
+                                ]
+                              ),  
+                              
+                              
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text('ACTION', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)) ,
+                                        
+                                        Row( 
+                                          children: [
+                                            InkWell(  
+                                              onTap: () { 
+                                                context.push('/sales/view_sales_orders', extra: {'extra': data[index]});
+                                              },
+                                              child: const Icon(Icons.remove_red_eye_outlined),
+                                            ),
+                                          ] 
+                                        ),
+                                        
+                                      ],
+                                    ),
+                                    
+                                  //  const SizedBox(height: 10), 
+                                    
+                                  //   Row(
+                                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  //     children: [
+                                  //       const Text('VIEW INVOICE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)) ,
+                                  //       InkWell(
+                                  //         onTap: () { 
+                                  //           context.push('/sales/view_invoice');
+                                  //         },
+                                  //         child: const Icon(CupertinoIcons.eye),
+                                  //       ), 
+                                  //     ],
+                                  //   ), 
+                                    
+                                  ],
+                                ),
+                              ),  
+                              
+                              
+                            ],
                           ),
                         ),
-                        
-                        
-                      ],
-                    )),
-        );
+                      ),
+                      
+                       const SizedBox(height: 10),
+                      if (isLoad == true) 
+                        const Center(child: SizedBox( 
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator()
+                          ))
+                      
+                      
+                    ],
+                  ));
       }),
     );
   }

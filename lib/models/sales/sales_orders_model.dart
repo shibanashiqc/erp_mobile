@@ -54,6 +54,7 @@ class Data {
   dynamic branchId;
   Customer? customer;
   List<SalesOrderItems>? salesOrderItems;
+  String? dueDate;
 
   Data(
       {this.id,
@@ -76,7 +77,9 @@ class Data {
       this.email,
       this.branchId,
       this.customer,
-      this.salesOrderItems});
+      this.salesOrderItems,
+      this.dueDate
+      });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -98,6 +101,7 @@ class Data {
     phone = json['phone'];
     email = json['email'];
     branchId = json['branch_id'];
+    dueDate = json['due_date'];   
     customer = json['customer'] != null
         ? new Customer.fromJson(json['customer'])
         : null;
@@ -313,6 +317,8 @@ class SalesOrderItems {
   dynamic quantity;
   String? rate;
   String? totalPrice;
+  String? balanceAmount;
+  String? paidAmount;
   String? createdAt;
   String? updatedAt;
   String? orderNumber;
@@ -324,6 +330,8 @@ class SalesOrderItems {
   Product? product;
   SalesPerson? salesPerson;
   PaymentTerm? paymentTerm;
+  String? dueDate;
+  String? notes;
 
   SalesOrderItems(
       {this.id,
@@ -342,7 +350,12 @@ class SalesOrderItems {
       this.salesPersonId,
       this.product,
       this.salesPerson,
-      this.paymentTerm});
+      this.paymentTerm,
+      this.dueDate,
+      this.balanceAmount,
+      this.paidAmount,
+      this.notes,
+      });
 
   SalesOrderItems.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -351,14 +364,18 @@ class SalesOrderItems {
     quantity = json['quantity'];
     rate = json['rate'];
     totalPrice = json['total_price'];
+    balanceAmount = json['balance_amount'].toString() == 'null' ? '0.00' : json['balance_amount'].toString();
+    paidAmount = json['paid_amount'].toString() == 'null' ? '0.00' : json['paid_amount'].toString(); 
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     orderNumber = json['order_number'];
     reference = json['reference'];
-    orderDate = json['order_date'];
+    orderDate = json['order_date']; 
     shipDate = json['ship_date'];
     paymentTermId = json['payment_term_id'];
+    dueDate = json['due_date']; 
     salesPersonId = json['sales_person_id'];
+    notes = json['notes'];
     product =
         json['product'] != null ? new Product.fromJson(json['product']) : null;
     salesPerson = json['sales_person'] != null
@@ -385,6 +402,9 @@ class SalesOrderItems {
     data['ship_date'] = this.shipDate;
     data['payment_term_id'] = this.paymentTermId;
     data['sales_person_id'] = this.salesPersonId;
+    data['balance_amount'] = this.balanceAmount;
+    data['paid_amount'] = this.paidAmount; 
+    data['notes'] = this.notes;  
     if (this.product != null) {
       data['product'] = this.product!.toJson();
     }
@@ -394,6 +414,7 @@ class SalesOrderItems {
     if (this.paymentTerm != null) {
       data['payment_term'] = this.paymentTerm!.toJson();
     }
+    data['due_date'] = this.dueDate;     
     return data;
   }
 }

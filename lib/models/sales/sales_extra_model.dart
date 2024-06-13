@@ -27,6 +27,8 @@ class Data {
   List<Products>? products;
   List<SalesPersons>? salesPersons;
   List<PaymentTerms>? paymentTerms;
+  List<CustomerTypes>? customerTypes;
+  List<Country>? country;
 
   Data({this.customers, this.products, this.salesPersons, this.paymentTerms});
 
@@ -55,6 +57,20 @@ class Data {
         paymentTerms!.add(new PaymentTerms.fromJson(v));
       });
     }
+    
+     if (json['customer_types'] != null) {
+      customerTypes = <CustomerTypes>[];
+      json['customer_types'].forEach((v) {
+        customerTypes!.add(new CustomerTypes.fromJson(v));
+      });
+    }
+    if (json['country'] != null) {
+      country = <Country>[];
+      json['country'].forEach((v) {
+        country!.add(new Country.fromJson(v));
+      });
+    }
+    
   }
 
   Map<String, dynamic> toJson() {
@@ -73,6 +89,158 @@ class Data {
       data['payment_terms'] =
           this.paymentTerms!.map((v) => v.toJson()).toList();
     }
+    if (this.customerTypes != null) {
+      data['customer_types'] =
+          this.customerTypes!.map((v) => v.toJson()).toList();
+    }
+    if (this.country != null) {
+      data['country'] = this.country!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class CustomerTypes {
+  int? id;
+  String? name;
+  String? createdAt;
+  String? updatedAt;
+
+  CustomerTypes({this.id, this.name, this.createdAt, this.updatedAt});
+
+  CustomerTypes.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
+} 
+
+class Country {
+  int? id;
+  String? code;
+  String? name;
+  String? createdAt;
+  String? updatedAt;
+  List<States>? states;
+
+  Country(
+      {this.id,
+      this.code,
+      this.name,
+      this.createdAt,
+      this.updatedAt,
+      this.states});
+
+  Country.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    code = json['code'];
+    name = json['name'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    if (json['states'] != null) {
+      states = <States>[];
+      json['states'].forEach((v) {
+        states!.add(new States.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['code'] = this.code;
+    data['name'] = this.name;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.states != null) {
+      data['states'] = this.states!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class States {
+  int? id;
+  int? countryId;
+  String? code;
+  String? name;
+  String? createdAt;
+  String? updatedAt;
+  List<Cities>? cities;
+
+  States(
+      {this.id,
+      this.countryId,
+      this.code,
+      this.name,
+      this.createdAt,
+      this.updatedAt,
+      this.cities});
+
+  States.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    countryId = json['country_id'];
+    code = json['code'];
+    name = json['name'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+    if (json['cities'] != null) {
+      cities = <Cities>[];
+      json['cities'].forEach((v) {
+        cities!.add(new Cities.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['country_id'] = this.countryId;
+    data['code'] = this.code;
+    data['name'] = this.name;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    if (this.cities != null) {
+      data['cities'] = this.cities!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Cities {
+  int? id;
+  int? stateId;
+  String? name;
+  String? createdAt;
+  String? updatedAt;
+
+  Cities({this.id, this.stateId, this.name, this.createdAt, this.updatedAt});
+
+  Cities.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    stateId = json['state_id'];
+    name = json['name'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['state_id'] = this.stateId;
+    data['name'] = this.name;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
     return data;
   }
 }
@@ -81,13 +249,15 @@ class Customers {
   int? id;
   String? name;
   dynamic phone;
+  String? email;
 
-  Customers({this.id, this.name, this.phone});
+  Customers({this.id, this.name, this.phone, this.email});
 
   Customers.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     phone = json['phone']; 
+    email = json['email']; 
   }
 
   Map<String, dynamic> toJson() {
@@ -144,6 +314,7 @@ class PaymentTerms {
   int? id;
   String? name;
   dynamic percentage;
+  dynamic days;
 
   PaymentTerms({this.id, this.name});
 
@@ -151,13 +322,15 @@ class PaymentTerms {
     id = json['id'];
     name = json['name'];
     percentage = json['percentage'];
-  }
+    days = json['days'];
+  } 
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['name'] = this.name;
     data['percentage'] = this.percentage;
+    data['days'] = this.days;
     return data;
   }
 }

@@ -36,7 +36,7 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
   @override
   void initState() {
     super.initState();
-    if (widget.salesOrder != null) {  
+    if (widget.salesOrder != null) {   
       data = Data.fromJson(widget.salesOrder);
       // group by sales person id
       items = data.salesOrderItems; 
@@ -138,7 +138,8 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 10),
                         itemCount: items!.length,
-                        shrinkWrap: true,
+                        shrinkWrap: true,  
+                        physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) => XCard(
                           child: Column(
                             children: [ 
@@ -148,18 +149,26 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                               Items(items: [
-                                ItemListModel(
-                                    name: 'SALES MAN', value: items?[index].salesPerson?.name ?? ''), 
-                                ItemListModel(
-                                    name: 'CUSTOMER', value: data.customer?.name ?? ''), 
+                                ItemListModel(name: 'REFERENCE', value: items?[index].reference ?? ''), 
+                                ItemListModel(name: 'SALES MAN', value: items?[index].salesPerson?.name ?? ''), 
+                                ItemListModel(name: 'NAME', value: data.customer?.name ?? ''), 
+                                ItemListModel(name: 'EMAIL', value: data.email ?? ''), 
+                                ItemListModel(name: 'PHONE', value: data.phone ?? ''), 
                                 ItemListModel(name: 'ID', value: items?[index].id.toString() ?? ''), 
-                                ItemListModel(name: 'TIME', value: items?[index].createdAt ?? ''),
-                              ]),
+                                ItemListModel(name: 'DATE & TIME', value: items?[index].createdAt ?? ''),
+                                ItemListModel(name: 'PAYMENT DUE DATE', value: items?[index].dueDate ?? ''), 
+                                ItemListModel(name: 'BALANCE AMOUNT', value: items?[index].balanceAmount ?? '0.0'), 
+                                ItemListModel(name: 'PAID AMOUNT', value: items?[index].paidAmount ?? '0.0'), 
+                                ItemListModel(name: 'TOTAL AMOUNT', value: items?[index].totalPrice ?? '0.0'), 
+                                
+                              ]), 
                               const SizedBox(height: 10),
-                              Padding(
+                              Padding( 
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
+                                    Text( items?[index].notes ?? ''),
+                                    const SizedBox(height: 10), 
                                     const Text('PRODUCT',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,

@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:calendar_view/calendar_view.dart';
 
-
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/auth/login/login_cubit.dart';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
@@ -23,6 +22,13 @@ import 'package:erp_mobile/screens/pos/pos_orders.dart';
 import 'package:erp_mobile/screens/pos/reciept.dart';
 import 'package:erp_mobile/screens/product/add_product.dart';
 import 'package:erp_mobile/screens/product/product_lists.dart';
+import 'package:erp_mobile/screens/production/client_create_or_edit.dart';
+import 'package:erp_mobile/screens/production/clients.dart';
+import 'package:erp_mobile/screens/production/project_create_or_edit.dart';
+import 'package:erp_mobile/screens/production/projects.dart';
+import 'package:erp_mobile/screens/production/team_create_or_edit.dart';
+import 'package:erp_mobile/screens/production/teams.dart';
+import 'package:erp_mobile/screens/profile.dart';
 import 'package:erp_mobile/screens/purchase/add_or_edit_purchase_order.dart';
 import 'package:erp_mobile/screens/purchase/add_or_edit_vendor.dart';
 import 'package:erp_mobile/screens/purchase/expense.dart';
@@ -45,12 +51,82 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 final router = GoRouter(
-  // initialLocation: '/home',
   routes: [
     GoRoute(
       path: '/',
       builder: (_, state) => const SplashScreen(),
       routes: [
+        GoRoute(
+          name: 'dynamc',
+          path: 'dynamic',
+          builder: (_, state) => Profile(),
+        ),
+        GoRoute(
+          path: 'project',
+          builder: (_, state) => ProjectCreateOrEdit(),
+          routes: [
+            
+            GoRoute(
+              name: 'project.list',
+              path: 'projects', 
+              builder: (_, state) =>  Projects(),
+            ),
+            
+            GoRoute(
+              name: 'project.teams',
+              path: 'teams', 
+              builder: (_, state) => const Teams(),
+            ),
+            
+             GoRoute(
+              name: 'project.team_create_or_edit',
+              path: 'team_create_or_edit', 
+              builder: (_, state) {
+                if (state.extra == null) return TeamCreateOrEdit();
+                Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+                return TeamCreateOrEdit(
+                  editId: extra['id'].toString(),
+                  data: extra['extra'],
+                  onSaved: extra['onSaved'] != null 
+                      ? extra['onSaved'] as Function()
+                      : () => {},
+                );
+              },  
+            ),
+            
+            GoRoute(
+              name: 'project.clients',
+              path: 'clients',
+              builder: (_, state) => const Clients(),
+            ),
+            GoRoute(
+              name: 'project.client_create_or_edit',
+              path: 'client_create_or_edit',
+              builder: (context, state) {
+                if (state.extra == null) return ClientCreateOrEdit();
+                Map<String, dynamic> extra =
+                    state.extra as Map<String, dynamic>;
+                return ClientCreateOrEdit(
+                  editId: extra['id'].toString(),
+                  data: extra['extra'],  
+                  onSaved: extra['onSaved'] != null 
+                      ? extra['onSaved'] as Function()
+                      : () => {},
+                );
+              },
+            ),
+            GoRoute(
+              name: 'project.create_or_edit',
+              path: 'create_or_edit',
+              builder: (_, state) => ProjectCreateOrEdit(),
+            ),
+          ],
+        ),
+        GoRoute(
+          name: 'profile',
+          path: 'profile',
+          builder: (_, state) => Profile(),
+        ),
         GoRoute(
           name: 'login',
           path: 'login',
@@ -189,12 +265,11 @@ final router = GoRouter(
           name: 'purchase.vendor',
           builder: (context, state) => const Vendor(),
         ),
-         GoRoute(
-          path: 'purchase/expense', 
+        GoRoute(
+          path: 'purchase/expense',
           name: 'purchase.expense',
           builder: (context, state) => const Expense(),
         ),
-        
         GoRoute(
             name: 'purchase.add_or_edit_purchase_order',
             path: 'purchase/add_or_edit_purchase_order',
@@ -207,8 +282,6 @@ final router = GoRouter(
                 data: params.extra,
               );
             }),
-        
-        
         GoRoute(
             path: 'purchase/add_or_edit_vendor',
             builder: (context, state) {
@@ -317,9 +390,18 @@ final router = GoRouter(
             GoRoute(
                 path: 'create_customers',
                 builder: (context, state) {
+                  if (state.extra is Function) {
+                    return CreateCustomers(onSaved: state.extra as Function());
+                  }
+
                   if (state.extra == null) return CreateCustomers();
                   final extra = json.encode(state.extra);
                   final params = Params.fromJson(json.decode(extra));
+                  // if(params.onSaved != null) {
+                  //  return CreateCustomers(
+                  //   onSaved: params.onSaved!,
+                  // );
+                  // }
                   return CreateCustomers(
                     editId: params.id,
                     data: params.extra,
@@ -333,6 +415,7 @@ final router = GoRouter(
 );
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -388,7 +471,7 @@ class Params {
   dynamic description;
   dynamic status;
   dynamic extra;
-  dynamic onSaved;
+  Function? onSaved;
   Params(
       {this.id,
       this.title,
@@ -403,6 +486,6 @@ class Params {
     description = json['description'];
     status = json['status'];
     extra = json['extra'];
-    onSaved = json['onSaved'];
+    // onSaved = json['onSaved'];
   }
 }

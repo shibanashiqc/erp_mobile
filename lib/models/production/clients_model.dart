@@ -1,12 +1,12 @@
-class CustomersModel {
+class ClientsModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  CustomersModel({this.status, this.message, this.data, this.meta});
+  ClientsModel({this.status, this.message, this.data, this.meta});
 
-  CustomersModel.fromJson(Map<String, dynamic> json) {
+  ClientsModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -34,101 +34,57 @@ class CustomersModel {
 
 class Data {
   int? id;
-  int? customerTypeId;
   String? name;
-  String? companyName;
   String? email;
+  String? address;
   String? phone;
-  String? alternatePhone;
-  String? panNumber;
   String? image;
-  String? imageUrl;
   String? createdAt;
   String? updatedAt;
-  dynamic branchId; 
-  String? dob;
-  String? bloodGroup;
-  String? billingAttention;
-  int? billingCountryId;
-  String? billingAddress;
-  int? billingStateId;
-  int? billingCityId;
-  String? billingZip;
-  String? billingPhone;
-  String? billingFax;
-  String? shippingAttention;
-  int? shippingCountryId;
-  String? shippingAddress;
-  int? shippingStateId;
-  int? shippingCityId;
-  String? shippingZip;
-  String? shippingPhone;
-  String? shippingFax;
+  dynamic countryId;
+  dynamic branchId;
+  dynamic vendorId; 
 
   Data(
       {this.id,
-      this.customerTypeId,
       this.name,
-      this.companyName,
       this.email,
+      this.address,
       this.phone,
-      this.alternatePhone,
-      this.panNumber,
       this.image,
-      this.imageUrl,
       this.createdAt,
       this.updatedAt,
-      this.branchId});
+      this.countryId,
+      this.branchId,
+      this.vendorId});
 
   Data.fromJson(Map<String, dynamic> json) {
-    id = json['id']; 
-    customerTypeId = json['customer_type_id'];
+    id = json['id'];
     name = json['name'];
-    companyName = json['company_name'];
     email = json['email'];
+    address = json['address'];
     phone = json['phone'];
-    alternatePhone = json['alternate_phone'];
-    panNumber = json['pan_number'];
     image = json['image'];
-    imageUrl = json['image'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    countryId = json['country_id'];
     branchId = json['branch_id'];
-     dob = json['dob'];
-    bloodGroup = json['blood_group'];
-    billingAttention = json['billing_attention'];
-    billingCountryId = json['billing_country_id'];
-    billingAddress = json['billing_address'];
-    billingStateId = json['billing_state_id'];
-    billingCityId = json['billing_city_id'];
-    billingZip = json['billing_zip'];
-    billingPhone = json['billing_phone'];
-    billingFax = json['billing_fax'];
-    shippingAttention = json['shipping_attention'];
-    shippingCountryId = json['shipping_country_id'];
-    shippingAddress = json['shipping_address'];
-    shippingStateId = json['shipping_state_id'];
-    shippingCityId = json['shipping_city_id'];
-    shippingZip = json['shipping_zip'];
-    shippingPhone = json['shipping_phone'];
-    shippingFax = json['shipping_fax']; 
+    vendorId = json['vendor_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['customer_type_id'] = this.customerTypeId;
     data['name'] = this.name;
-    data['company_name'] = this.companyName;
     data['email'] = this.email;
+    data['address'] = this.address;
     data['phone'] = this.phone;
-    data['alternate_phone'] = this.alternatePhone;
-    data['pan_number'] = this.panNumber;
     data['image'] = this.image;
-    data['image_url'] = this.imageUrl;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['country_id'] = this.countryId;
     data['branch_id'] = this.branchId;
+    data['vendor_id'] = this.vendorId;
     return data;
   }
 }
@@ -140,7 +96,7 @@ class Meta {
   int? lastPage;
   int? from;
   int? to;
-  Null? prevPageUrl;
+  dynamic prevPageUrl;
 
   Meta(
       {this.currentPage,

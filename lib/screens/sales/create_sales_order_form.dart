@@ -21,7 +21,7 @@ import 'package:shimmer/shimmer.dart';
 
 class CreateSalesOrder extends StatefulWidget {
   dynamic data = {};
-  CreateSalesOrder({super.key,  this.data});
+  CreateSalesOrder({super.key, this.data});
 
   @override
   State<CreateSalesOrder> createState() => _CreateSalesOrderState();
@@ -53,14 +53,20 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
   double paidAmount = 0.0;
   double balanceAmount = 0.0;
   int payTermValue = 0;
-  
+
   calculate(discount) {
-    totalAmount = salesItems.fold(0, (previousValue, element) => int.parse(double.parse(element.totalPrice.toString()).toStringAsFixed(0)) + previousValue).toDouble();
-    paidAmount = totalAmount * (discount / 100);
+    totalAmount = salesItems
+        .fold(
+            0,
+            (previousValue, element) =>
+                int.parse(double.parse(element.totalPrice.toString())
+                    .toStringAsFixed(0)) +
+                previousValue)
+        .toDouble();
+    paidAmount = totalAmount * (payTermValue / 100);
     balanceAmount = totalAmount - paidAmount;
     setState(() {});
   }
-  
 
   void setValue(ChangeFormValuesState state) {
     switch (state.type) {
@@ -101,25 +107,10 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
   }
 
   DateTime focusedDay = DateTime.now();
-  @override
-  void initState() {
-    super.initState();
-    
-      log(widget.data.toString() ); 
-    
-    if (widget.data != null) {
-      customerId = widget.data['customer_id'].toString();
-      editId = widget.data['id'].toString(); 
-      email = widget.data['email'].toString();
-      phone = widget.data['phone'].toString(); 
-    }
-    
-    orderNumber = '${DateTime.now().millisecondsSinceEpoch}'; 
-    orderDate = DateTime.now().toString();
-    shipDate = DateTime.now().toString();
-    reference = '${DateTime.now().millisecondsSinceEpoch}';
-    
-    final salesExra = context.read<MainCubit>().getExtraSales();
+  
+  updateData() async {
+    log('Update Data');
+    final salesExra =  context.read<MainCubit>().getExtraSales();
     salesExra.then((value) {
       customers = value.data?.customers;
       products = value.data?.products;
@@ -128,6 +119,27 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
       loading = false;
       setState(() {});
     });
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+
+    log(widget.data.toString());
+
+    if (widget.data != null) {
+      customerId = widget.data['customer_id'].toString();
+      editId = widget.data['id'].toString();
+      email = widget.data['email'].toString();
+      phone = widget.data['phone'].toString();
+    }
+
+    orderNumber = '${DateTime.now().millisecondsSinceEpoch}';
+    orderDate = DateTime.now().toString();
+    shipDate = DateTime.now().toString();
+    reference = '${DateTime.now().millisecondsSinceEpoch}';
+    updateData(); 
+    
   }
 
   @override
@@ -143,7 +155,7 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
         label: 'Save',
         onPressed: () {
           context.read<MainCubit>().createSalesOrder({
-            'id': editId, 
+            'id': editId,
             'customer_id': customerId,
             'sales_person_id': salesPersonId,
             'payment_term_id': paymentTermId,
@@ -154,17 +166,31 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
             'reference': reference,
             'order_date': orderDate,
             'ship_date': shipDate,
-            'notes': notes, 
-            'paid_amount' : paidAmount.toString(),
-            'balance_amount' : balanceAmount.toString(),
-            'sales_order_items' : salesItems.map((e) => e.toJson()).toList(),
-            'sub_total' : salesItems.fold(0, (previousValue, element) => int.parse(double.parse(element.totalPrice.toString()).toStringAsFixed(0)) + previousValue).toString(), 
-            'total' : salesItems.fold(0, (previousValue, element) => int.parse(double.parse(element.totalPrice.toString()).toStringAsFixed(0)) + previousValue).toString()
+            'notes': notes,
+            'paid_amount': paidAmount.toString(),
+            'balance_amount': balanceAmount.toString(),
+            'sales_order_items': salesItems.map((e) => e.toJson()).toList(),
+            'sub_total': salesItems
+                .fold(
+                    0,
+                    (previousValue, element) =>
+                        int.parse(double.parse(element.totalPrice.toString())
+                            .toStringAsFixed(0)) +
+                        previousValue)
+                .toString(),
+            'total': salesItems
+                .fold(
+                    0,
+                    (previousValue, element) =>
+                        int.parse(double.parse(element.totalPrice.toString())
+                            .toStringAsFixed(0)) +
+                        previousValue)
+                .toString()
           }).then((value) {
             if (value.status == 'success') {
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Sales Order Created'))); 
-              context.pop();  
+                  const SnackBar(content: Text('Sales Order Created')));
+              context.pop();
             }
           });
         },
@@ -238,25 +264,54 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        //  Customer Name
-
+                      
                         XSelect(
+                            extraLabel: InkWell(
+                              onTap: () { 
+                                context.push('/sales/create_customers', extra: updateData);   
+                              },
+                              child: const Text( 
+                                'Add Customer',
+                                style: TextStyle(
+                                  color: ColorConstants.secondaryColor,
+                                  fontWeight: FontWeight.bold, 
+                                ), 
+                              ),
+                            ),
                             errorBags: errorBags,
                             model: 'customer_id',
                             label: 'Customer Name',
                             value: customerId,
                             options: customers?.map((e) {
                                   return DropDownItem(
-                                      value: e.id.toString(), label: e.name);
+                                      value: e.id.toString(), 
+                                      label: e.name,
+                                      extra: e.phone.toString()
+                                      );
                                 }).toList() ??
                                 [],
                             onChanged: (val) {
                               context
                                   .read<MainCubit>()
                                   .changeFormValues('customer_id', val);
+                              email = customers
+                                      ?.where((element) =>
+                                          element.id == int.parse(val))
+                                      .first
+                                      .email ??
+                                  '';
+                              phone = customers
+                                      ?.where((element) =>
+                                          element.id == int.parse(val))
+                                      .first
+                                      .phone
+                                      .toString() ??
+                                  '';
+                              setState(() {});
                             }),
 
                         XInput(
+                          onlyCard: customerId != null,
                           initialValue: email,
                           errorBags: errorBags,
                           model: 'email',
@@ -270,7 +325,8 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                         ),
 
                         XInput(
-                          initialValue: phone,    
+                          onlyCard: customerId != null,
+                          initialValue: phone,
                           errorBags: errorBags,
                           model: 'phone',
                           label: 'Enter Phone',
@@ -297,7 +353,7 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
 
                         XInput(
                           initialValue: reference,
-                          errorBags: errorBags,  
+                          errorBags: errorBags,
                           label: 'Enter Reference',
                           model: 'reference',
                           onChanged: (value) {
@@ -338,42 +394,17 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
 
                         XSelect(
                             errorBags: errorBags,
-                            value: paymentTermId,
-                            model: 'payment_term_id',
-                            onChanged: (val) {
-                              context
-                                  .read<MainCubit>()
-                                  .changeFormValues('payment_term_id', val);
-                                  
-                                  if(paymentTerms?.where((element) => element.id == int.parse(val)).first.percentage != null) {
-                                    payTermValue = paymentTerms?.where((element) => element.id == int.parse(val)).first.percentage!; 
-                                    calculate(paymentTerms?.where((element) => element.id == int.parse(val)).first.percentage!); 
-                                    for (var element in salesItems) {
-                                      element.paymentTermId = int.parse(val); 
-                                    }
-                                  } 
-                                  
-                            },
-                            label: 'Payment Terms',
-                            options: paymentTerms?.map((e) {
-                                  return DropDownItem(
-                                      value: e.id.toString(), label: e.name);
-                                }).toList() ??
-                                []),
-
-                        XSelect(
-                            errorBags: errorBags,
                             value: salesPersonId,
                             model: 'sales_person_id',
                             onChanged: (val) {
                               context
                                   .read<MainCubit>()
                                   .changeFormValues('sales_person_id', val);
-                                  for (var element in salesItems) {
-                                      element.salesPersonId = int.parse(val); 
-                                  }
-                                  
-                                  setState(() {});  
+                              for (var element in salesItems) {
+                                element.salesPersonId = int.parse(val);
+                              }
+
+                              setState(() {});
                             },
                             label: 'Sales Person',
                             options: salesPersons?.map((e) {
@@ -429,8 +460,9 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                         salesItems.isEmpty
                             ? const SizedBox()
                             : Column(
-                              children: [
-                                ListView.builder(
+                                children: [
+                                  ListView.builder(
+                                    physics: const NeverScrollableScrollPhysics(),
                                     shrinkWrap: true,
                                     itemCount: salesItems.length,
                                     itemBuilder: (context, index) {
@@ -451,7 +483,9 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                                                   const SizedBox(width: 10),
                                                   InkWell(
                                                     onTap: () {
-                                                      salesItems.removeAt(index);
+                                                      salesItems
+                                                          .removeAt(index);
+                                                      calculate(0);
                                                       setState(() {});
                                                     },
                                                     child: const Icon(
@@ -470,28 +504,34 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                                                 onChanged: (val) {
                                                   salesItems[index].productId =
                                                       int.parse(val);
-                                                      
-                                                  salesItems[index].rate = products!
-                                                      .firstWhere((element) =>
-                                                          element.id ==
-                                                          int.parse(val))
-                                                      .price 
-                                                      .toString();
-                                                  salesItems[index].totalPrice = salesItems[index]
-                                                                  .rate
-                                                                  .toString();
-                                                  setState(() {});  
+
+                                                  salesItems[index].rate =
+                                                      products!
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element.id ==
+                                                                  int.parse(
+                                                                      val))
+                                                          .price
+                                                          .toString();
+                                                  salesItems[index].totalPrice =
+                                                      salesItems[index]
+                                                          .rate
+                                                          .toString();
+                                                  calculate(0);
+                                                  setState(() {});
                                                 },
                                                 label: 'Item Name',
                                                 options: products?.map((e) {
                                                       return DropDownItem(
-                                                          value: e.id.toString(),
+                                                          value:
+                                                              e.id.toString(),
                                                           label: e.name);
                                                     }).toList() ??
                                                     [],
                                               ),
                                               XInput(
-                                                onlyCard: true, 
+                                                onlyCard: true,
                                                 readOnly: true,
                                                 initialValue: salesItems[index]
                                                     .rate
@@ -506,21 +546,30 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                                                 label: 'Enter Quantity',
                                                 initialValue: salesItems[index]
                                                     .quantity
-                                                    .toString(), 
+                                                    .toString(),
                                                 onChanged: (value) {
-                                                  salesItems[index].quantity = int.parse(value);
-                                                  salesItems[index].totalPrice = (salesItems[index].quantity * double.parse(salesItems[index].rate.toString())).toString();
+                                                  salesItems[index].quantity =
+                                                      int.parse(value);
+                                                  salesItems[index]
+                                                      .totalPrice = (salesItems[
+                                                                  index]
+                                                              .quantity *
+                                                          double.parse(
+                                                              salesItems[index]
+                                                                  .rate
+                                                                  .toString()))
+                                                      .toString();
                                                   setState(() {});
-                                                  calculate(payTermValue); 
+                                                  calculate(payTermValue);
                                                 },
                                                 hintText: 'Quantity',
                                               ),
                                               XInput(
-                                                onlyCard: true,  
+                                                onlyCard: true,
                                                 readOnly: true,
                                                 label: 'Total',
                                                 initialValue: salesItems[index]
-                                                    .totalPrice 
+                                                    .totalPrice
                                                     .toString(),
                                                 onChanged: (value) {
                                                   // salesItems[index].total = double.parse(value);
@@ -534,34 +583,123 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                                     },
                                   ),
                                   const SizedBox(height: 10),
-                                  
-                                                            
+                                ],
+                              ),
+
+                        const SizedBox(height: 10),
+                        XSelect(
+                            errorBags: errorBags,
+                            value: paymentTermId,
+                            model: 'payment_term_id',
+                            onChanged: (val) {
+                              context
+                                  .read<MainCubit>()
+                                  .changeFormValues('payment_term_id', val);
+
+                              if (paymentTerms
+                                      ?.where((element) =>
+                                          element.id == int.parse(val))
+                                      .first
+                                      .percentage !=
+                                  null) {
+                                payTermValue = paymentTerms
+                                    ?.where((element) =>
+                                        element.id == int.parse(val))
+                                    .first
+                                    .percentage!;
+                                calculate(paymentTerms
+                                    ?.where((element) =>
+                                        element.id == int.parse(val))
+                                    .first
+                                    .percentage!);
+                                for (var element in salesItems) {
+                                  element.paymentTermId = int.parse(val);
+                                }
+                              }
+                            },
+                            label: 'Payment Terms',
+                            options: paymentTerms?.map((e) {
+                                  return DropDownItem(
+                                      value: e.id.toString(), label: e.name);
+                                }).toList() ??
+                                []),
+
+                        paymentTermId != null
+                            ? Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.indigo[50],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        const Text('Note:'),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                            'The payment term is ${paymentTerms?.where((element) => element.id == int.parse(paymentTermId)).first.days} days. You will have to pay ${payTermValue}% of the total amount. The total amount is $totalAmount. You will have to pay $paidAmount and the remaining amount is $balanceAmount.'),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              )
+                            : const SizedBox(),
+
+                        XCard(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('TOTAL AMOUNT: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 10),
+                                    Text(salesItems
+                                        .fold(
+                                            0,
+                                            (previousValue, element) =>
+                                                int.parse(double.parse(element
+                                                        .totalPrice
+                                                        .toString())
+                                                    .toStringAsFixed(0)) +
+                                                previousValue)
+                                        .toString())
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('PAID AMOUNT: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 10),
+                                    Text(paidAmount.toString())
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('BALANCE AMOUNT: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 10),
+                                    Text(balanceAmount.toString())
+                                  ],
+                                ),
                               ],
                             ),
-                            
-                             Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                    const Text('TOTAL AMOUNT: '),
-                                    const SizedBox(width: 10), 
-                                    Text(salesItems.fold(0, (previousValue, element) => int.parse(double.parse(element.totalPrice.toString()).toStringAsFixed(0)) + previousValue).toString())
-                                  ],),
-                                  
-                            Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                    const Text('PAID AMOUNT: '),
-                                    const SizedBox(width: 10), 
-                                    Text(paidAmount.toString())
-                                  ],),  
-                                  
-                            Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                    const Text('BALANCE AMOUNT: '),
-                                    const SizedBox(width: 10), 
-                                    Text(balanceAmount.toString())
-                                  ],),    
+                          ),
+                        ),
 
                         const SizedBox(
                           height: 90,

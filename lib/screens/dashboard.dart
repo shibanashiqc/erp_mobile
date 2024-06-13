@@ -1,15 +1,20 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:erp_mobile/cubit/auth/login/login_cubit.dart';
 import 'package:erp_mobile/screens/apointments.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
+import 'package:erp_mobile/screens/common/x_select.dart';
 import 'package:erp_mobile/screens/drawer.dart';
 import 'package:erp_mobile/screens/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashbaord extends StatefulWidget {
@@ -23,24 +28,29 @@ class _DashbaordState extends State<Dashbaord> {
   int currentPageIndex = 0;
   dynamic user;
   List<dynamic>? modules;
+  List<dynamic>? branches = [];
+  String selectedBranchId = '';
 
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      user = json.decode(prefs.getString('user') ?? '{}'); 
+      user = json.decode(prefs.getString('user') ?? '{}');
       modules = json.decode(prefs.getString('modules') ?? '[]');
+      branches = json.decode(prefs.getString('branches') ?? '[]');
+      branches?.add({'id': '', 'name': 'All'});  
+      selectedBranchId = prefs.getString('current_branch_id') ?? ''; 
       setState(() {});
     });
   }
- 
+
   @override
   Widget build(BuildContext context) {
-    return PopScope( 
-      canPop: false, 
+    return PopScope(
+      canPop: false,
       onPopInvoked: (justification) {
-        showDialog( 
+        showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
@@ -54,7 +64,7 @@ class _DashbaordState extends State<Dashbaord> {
                 ),
                 TextButton(
                   onPressed: () {
-                    exit(0); 
+                    exit(0);
                   },
                   child: const Text('Yes'),
                 ),
@@ -69,15 +79,58 @@ class _DashbaordState extends State<Dashbaord> {
         //   modules: modules ?? [],
         // ),
         appBar: AppBar(
-          actions: const [
-             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircleAvatar( 
-                radius: 15,
-                child: Icon(Icons.person, size: 15,), 
-                // backgroundImage: AssetImage('assets/images/user.png'),
+          leadingWidth: 150,
+          leading: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: InkWell(
+                onTap: () async {},
+                child: Text('TechkiHub',
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 18, 
+                        fontWeight: FontWeight.bold))),
+          ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 8,
               ),
-            ),  
+              child: XSelect(
+                value: selectedBranchId,
+                width: 0.39,
+                height: 0.04,
+                placeholder: 'Select Branch',
+                color: Colors.grey.withOpacity(0.1),
+                options: branches?.map((e) {
+                      return DropDownItem(
+                          value: e['id'].toString(), label: e['name']);
+                    }).toList() ??
+                    [],
+                onChanged: (value) async {
+                  await context
+                      .read<LoginCubit>()
+                      .updateUser({'current_branch_id': value}).then(
+                          (value) => context.push('/'));
+                  selectedBranchId = value;
+                },
+              ),
+            ),
+            InkWell(
+              onTap: () async {
+                context.push('/profile');
+              }, 
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 15,
+                  child: Icon(
+                    Icons.person,
+                    size: 15,
+                  ),
+                  // backgroundImage: AssetImage('assets/images/user.png'),
+                ),
+              ),
+            ),
           ],
           // title: XInput(
           //   height: 0.05,
@@ -134,9 +187,8 @@ class _DashbaordState extends State<Dashbaord> {
         //     ),
         //   ],
         // ),
-      
+
         bottomNavigationBar: BottomNavigationBar(
-          
           currentIndex: currentPageIndex,
           onTap: (index) {
             setState(() {
@@ -152,17 +204,16 @@ class _DashbaordState extends State<Dashbaord> {
               icon: Icon(CupertinoIcons.bell),
               label: 'Notifications',
             ),
-            
+
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.calendar), 
-              label: 'Appointments', 
+              icon: Icon(CupertinoIcons.calendar),
+              label: 'Appointments',
             ),
-            
+
             // BottomNavigationBarItem(
             //   icon: Icon(CupertinoIcons.calendar),
-            //   label: 'Appointments', 
+            //   label: 'Appointments',
             // ),
-            
           ],
         ),
         body: IndexedStack(
@@ -172,10 +223,9 @@ class _DashbaordState extends State<Dashbaord> {
             Center(
               child: Text('Notifications'),
             ),
-            
-            
-           Appointments(),
-            
+
+            Appointments(),
+
             // Center(
             //   child: Text('Messages'),
             // ),
@@ -215,7 +265,7 @@ class _DrawerListState extends State<DrawerList> {
         Navigator.pop(context);
         if (widget.onTap != null) {
           widget.onTap!();
-        } 
+        }
       },
       trailing: widget.children.isEmpty
           ? null

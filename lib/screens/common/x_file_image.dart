@@ -70,6 +70,12 @@ class _XFileImageState extends State<XFileImage>
     } 
     super.initState(); 
   }
+  
+  @override
+  void dispose() { 
+    loadingController.dispose();
+    super.dispose();
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +230,8 @@ class _XFileImageState extends State<XFileImage>
                                   width: 10,
                                 ),
                               ],
-                            ));
+                            )
+                            );
                       }),
                   const SizedBox(
                     height: 20,

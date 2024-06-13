@@ -2,6 +2,8 @@
 
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math';
+import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/main_cubit.dart';
@@ -14,10 +16,12 @@ import 'package:erp_mobile/screens/common/x_input.dart';
 import 'package:erp_mobile/screens/common/x_select.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:syncfusion_flutter_barcodes/barcodes.dart';
 
 class AddProduct extends StatefulWidget {
   int? editId;
@@ -43,6 +47,9 @@ class _AddProductState extends State<AddProduct> {
   String purchasePrice = '';
   String salePrice = '';
 
+  String imageUrl = '';
+  String billImageUrl = '';
+
   String taxRate = '';
   String price = '';
   String quantity = '1';
@@ -62,7 +69,9 @@ class _AddProductState extends State<AddProduct> {
   List<Category> categories = [];
   List<SubCategory> subCategories = [];
   List<Units> productUnits = [];
+  bool isSubmiting = false;
   ModeOfReceive modeOfReceives = ModeOfReceive();
+  String? barCode;
 
   set setValue(ChangeFormValuesState state) {
     switch (state.type) {
@@ -135,15 +144,24 @@ class _AddProductState extends State<AddProduct> {
     return file;
   }
 
+  String generateRandom(int length) {
+    Random random = Random();
+    String num = '';
+    for (int i = 0; i < length; i++) {
+      num += random.nextInt(9).toString();
+    }
+    return num;
+  }
+
   @override
   void initState() {
-    super.initState(); 
+    super.initState();
     loading = true;
-    if (widget.editId != null) { 
+    if (widget.editId != null) {
       editId = widget.editId.toString();
       name = widget.data?['name'] ?? '';
       productTypeId = widget.data?['product_type_id'].toString() ?? '';
-      inventoryTypeId = widget.data?['inventory_type_id'].toString() ?? '';
+      // inventoryTypeId = widget.data?['inventory_type_id'].toString() ?? '';
       sku = widget.data?['sku'].toString() ?? '';
       categoryId = widget.data?['category_id'].toString() ?? '';
       subCategoryId = widget.data?['sub_category_id'].toString() ?? '';
@@ -160,16 +178,21 @@ class _AddProductState extends State<AddProduct> {
       receivedDate = widget.data?['received_date'].toString() ?? '';
       description = widget.data?['description'].toString() ?? '';
 
-      SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
-        if (widget.data?['image'] != null) {
-          image = await getImageFileFromUrl(widget.data?['image']);  
-        }
+      imageUrl = widget.data?['image'].toString() ?? '';
+      billImageUrl = widget.data?['bill_image'].toString() ?? '';
 
-        if (widget.data?['bill_image'] != null) {
-          billImage = await getImageFileFromUrl(widget.data?['bill_image']); 
-        }
-        
-      });  
+      barCode = widget.data?['bar_code'].toString() ?? '';
+
+      // SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
+      //   if (widget.data?['image'] != null) {
+      //     image = await getImageFileFromUrl(widget.data?['image']);
+      //   }
+
+      //   if (widget.data?['bill_image'] != null) {
+      //     billImage = await getImageFileFromUrl(widget.data?['bill_image']);
+      //   }
+
+      // });
 
       setState(() {});
     }
@@ -199,12 +222,15 @@ class _AddProductState extends State<AddProduct> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: XButton(
+        disabled: isSubmiting,
         // loading: context.select((MainCubit cubit) => cubit.state is LoadedMainState),
         label: 'Save',
         onPressed: () async {
           try {
+            isSubmiting = true;
+            setState(() {});
             await context.read<MainCubit>().createOrUpdateProduct({
-              'edit_id': editId, 
+              'edit_id': editId,
               'name': name,
               'product_type_id': productTypeId,
               'inventory_type_id': inventoryTypeId,
@@ -216,19 +242,21 @@ class _AddProductState extends State<AddProduct> {
               'product_brand_id': productBrandId,
               'product_unit_id': productUnitId,
               'purchase_price': purchasePrice,
-              'sale_price': salePrice,
+              'sale_price': price,
               'tax_rate': taxRate,
               'expiry_date': expiryDate,
               'manufacturing_date': manufacturingDate,
               'mode_of_receive': modeOfReceive,
               'received_date': receivedDate,
               'description': description,
+              'bar_code': barCode,
+              'symblogy': 'CODE128',
               'image': image.path != ''
                   ? await MultipartFile.fromFile(image.path)
-                  : null,
+                  : imageUrl,
               'bill_image': billImage.path != ''
                   ? await MultipartFile.fromFile(billImage.path)
-                  : null,
+                  : billImageUrl,
             }).then((value) {
               if (value.status != 'error') {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -237,13 +265,15 @@ class _AddProductState extends State<AddProduct> {
                 context.push('/dashboard');
               } else {
                 errorBags = value.errors ?? [];
-                setState(() {});
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(value.message ?? 'Data not saved')));
               }
+
+              isSubmiting = false;
+              setState(() {});
             });
           } catch (e) {
-            log('error: $e');
+            // log('error: $e');
           }
         },
       ),
@@ -255,7 +285,7 @@ class _AddProductState extends State<AddProduct> {
 
         if (state is LoadedMainState) {
           loading = false;
-          log('state: $state');
+          // log('state: $state');
         }
 
         if (state is LoadingMainState) {
@@ -264,7 +294,7 @@ class _AddProductState extends State<AddProduct> {
 
         if (state is ValidationErrorState) {
           errorBags = state.errors;
-          log('errorBags: $errorBags');
+          // log('errorBags: $errorBags');
           setState(() {});
         }
 
@@ -334,20 +364,22 @@ class _AddProductState extends State<AddProduct> {
                                 .read<MainCubit>()
                                 .changeFormValues('product_type_id', val);
                           }),
-                      XSelect(
-                          errorBags: errorBags,
-                          model: 'inventory_type_id',
-                          value: inventoryTypeId,
-                          label: 'Inventry Type',
-                          options: inventoryTypes
-                              .map((e) => DropDownItem(
-                                  value: e.id.toString(), label: e.name))
-                              .toList(),
-                          onChanged: (val) {
-                            context
-                                .read<MainCubit>()
-                                .changeFormValues('inventory_type_id', val);
-                          }),
+
+                      // XSelect(
+                      //     errorBags: errorBags,
+                      //     model: 'inventory_type_id',
+                      //     value: inventoryTypeId,
+                      //     label: 'Inventry Type',
+                      //     options: inventoryTypes
+                      //         .map((e) => DropDownItem(
+                      //             value: e.id.toString(), label: e.name))
+                      //         .toList(),
+                      //     onChanged: (val) {
+                      //       context
+                      //           .read<MainCubit>()
+                      //           .changeFormValues('inventory_type_id', val);
+                      //     }),
+
                       XInput(
                         model: 'sku',
                         errorBags: errorBags,
@@ -395,6 +427,9 @@ class _AddProductState extends State<AddProduct> {
                           value: subCategoryId,
                           label: 'Sub Category',
                           options: subCategories
+                              .where((element) =>
+                                  element.categoryId.toString() ==
+                                  categoryId.toString())
                               .map((e) => DropDownItem(
                                   value: e.id.toString(), label: e.name))
                               .toList(),
@@ -424,7 +459,8 @@ class _AddProductState extends State<AddProduct> {
                               // errorBags: errorBags,
                               model: 'product_unit_id',
                               value: productUnitId,
-                              width: 0.3,
+                              width: 0.32,
+                              // height: 0.1,
                               label: 'Unit',
                               options: productUnits
                                   .map((e) => DropDownItem(
@@ -453,17 +489,23 @@ class _AddProductState extends State<AddProduct> {
                           ),
                         ],
                       ),
+
                       XFileImage(
-                        file: image,    
+                        file: image,
                         allowMultiple: false,
                         label: 'Image',
                         onChanged: (value) {
-                          context 
+                          context
                               .read<MainCubit>()
                               .changeFormValues('image', value);
                         },
                         isMandatory: true,
                       ),
+
+                      imageUrl != '' && image.path == ''
+                          ? ImageWidget(imageUrl: imageUrl)
+                          : const SizedBox(),
+
                       XInput(
                         model: 'purchase_price',
                         errorBags: errorBags,
@@ -477,19 +519,19 @@ class _AddProductState extends State<AddProduct> {
                         label: 'Purchase Price',
                         hintText: 'Enter Purchase Price',
                       ),
-                      XInput(
-                        model: 'sale_price',
-                        errorBags: errorBags,
-                        initialValue: salePrice,
-                        onChanged: (value) {
-                          context
-                              .read<MainCubit>()
-                              .changeFormValues('sale_price', value);
-                        },
-                        isMandatory: true,
-                        label: 'Sales Price',
-                        hintText: 'Enter Sales Price',
-                      ),
+                      // XInput(
+                      //   model: 'sale_price',
+                      //   errorBags: errorBags,
+                      //   initialValue: salePrice,
+                      //   onChanged: (value) {
+                      //     context
+                      //         .read<MainCubit>()
+                      //         .changeFormValues('sale_price', value);
+                      //   },
+                      //   isMandatory: true,
+                      //   label: 'Sales Price',
+                      //   hintText: 'Enter Sales Price',
+                      // ),
                       XInput(
                         model: 'tax_rate',
                         errorBags: errorBags,
@@ -573,6 +615,11 @@ class _AddProductState extends State<AddProduct> {
                         },
                         isMandatory: true,
                       ),
+
+                      billImageUrl != '' && billImage.path == ''
+                          ? ImageWidget(imageUrl: billImageUrl)
+                          : const SizedBox(),
+
                       XInput(
                         height: 0.2,
                         model: 'description',
@@ -585,10 +632,134 @@ class _AddProductState extends State<AddProduct> {
                         label: 'Description',
                         hintText: 'Enter Description',
                       ),
+
+                      barCode != 'null' && widget.editId != null
+                          ? const SizedBox()
+                          : Column(
+                              children: [
+                                XButton(
+                                  color: ColorConstants.primaryColor,
+                                  label: 'Generate Bar Code',
+                                  onPressed: () {
+                                    barCode = generateRandom(12);
+                                    setState(() {});
+                                  },
+                                ),
+                                XButton(
+                                    icon: Icons.qr_code,
+                                    label: 'Scan BARCODE',
+                                    onPressed: () async {
+                                      barCode = await FlutterBarcodeScanner
+                                          .scanBarcode(
+                                        '#ff6666',
+                                        'Cancel',
+                                        true,
+                                        ScanMode.BARCODE,
+                                      );
+                                      
+                                      setState(() {
+                                      });
+
+                                      // if (barcode == '-1') {
+                                      //   return;
+                                      // }
+
+                                      try {} catch (e) {
+                                        // log('Error: $e');
+                                      }
+                                    })
+                              ],
+                            ),
+
+                      barCode != 'null'
+                          ? Container(
+                              color: Colors.white,
+                              height: 80,
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: SfBarcodeGenerator(
+                                  showValue: true,
+                                  value: barCode ?? '',
+                                  symbology: Code128(),
+                                ),
+                              ),
+                            )
+                          : const SizedBox(),
+
                       const SizedBox(height: 60),
                     ],
                   ));
       }),
+    );
+  }
+}
+
+class ImageWidget extends StatelessWidget {
+  const ImageWidget({
+    super.key,
+    required this.imageUrl,
+  });
+
+  final String imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade200,
+                    offset: const Offset(0, 1),
+                    blurRadius: 3,
+                    spreadRadius: 2,
+                  )
+                ]),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    imageUrl,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        imageUrl,
+                        style:
+                            const TextStyle(fontSize: 13, color: Colors.black),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
+            )),
+        const SizedBox(height: 10),
+      ],
     );
   }
 }

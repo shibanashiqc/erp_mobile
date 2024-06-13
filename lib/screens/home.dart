@@ -4,12 +4,14 @@ import 'dart:math';
 
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/auth/login/login_cubit.dart';
+import 'package:erp_mobile/models/pos/pos_order_model.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_dashboard_card.dart';
 import 'package:erp_mobile/screens/common/x_menu.dart';
 import 'package:erp_mobile/screens/common/x_menu_item.dart';
 import 'package:erp_mobile/screens/dashboard.dart';
+import 'package:erp_mobile/screens/dynamic.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -28,7 +30,9 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<_SalesData> data = [];
   List<_SalesData> dataExpense = [];
-  
+  List<Product> lowQuantityProducts = [];
+  List<Product> expiredProducts = [];
+
   List<dynamic> modules = [];
 
   String totalIncome = '0.00';
@@ -39,61 +43,53 @@ class _HomeState extends State<Home> {
   String totalBalance = '0.00';
   String totalPos = '0.00';
   String totalProducts = '0.00';
-  
-  IconData getRandomIcon(){
-  final List<int> points = <int>[0xe0b0, 0xe0b1, 0xe0b2, 0xe0b3, 0xe0b4];
-  final Random random = Random();
-  const String chars = '0123456789ABCDEF';
-  int length = 3;
-  String hex = '0xe';
-  while(length-- > 0) hex += chars[(random.nextInt(16)) | 0];
-  return IconData(int.parse(hex), fontFamily: 'MaterialIcons');
-}
 
- double generateHeight(count)
-  {
-    if(count == 3)
-    {
+  IconData getRandomIcon() {
+    final List<int> points = <int>[0xe0b0, 0xe0b1, 0xe0b2, 0xe0b3, 0xe0b4];
+    final Random random = Random();
+    const String chars = '0123456789ABCDEF';
+    int length = 3;
+    String hex = '0xe';
+    while (length-- > 0) {
+      hex += chars[(random.nextInt(16)) | 0];
+    }
+    return IconData(int.parse(hex), fontFamily: 'MaterialIcons');
+  }
+
+  double generateHeight(count) {
+    if (count == 3) {
       return 0.15;
     }
-    
-    if(count == 4)
-    {
+
+    if (count == 4) {
       return 0.2;
     }
-    
-    if(count == 5)
-    {
+
+    if (count == 5) {
       return 0.25;
     }
-    
-    if(count == 6)
-    {
+
+    if (count == 6) {
       return 0.3;
     }
-    
-    if(count == 7)
-    {
+
+    if (count == 7) {
       return 0.35;
     }
-    
-    if(count == 8)
-    {
+
+    if (count == 8) {
       return 0.4;
     }
-    
-    if(count == 9)
-    { 
+
+    if (count == 9) {
       return 0.45;
     }
-    
-    if(count == 10)
-    {
+
+    if (count == 10) {
       return 0.5;
     }
-    
+
     return 0.0;
-    
   }
 
   @override
@@ -101,10 +97,10 @@ class _HomeState extends State<Home> {
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await context.read<LoginCubit>().getLoggedUser().then((value) async {
         try {
-           SharedPreferences prefs = await SharedPreferences.getInstance();
-           modules = json.decode(prefs.getString('modules') ?? '[]'); 
-           modules.removeWhere((element) => element['slug'] == 'dashboard'); 
-          
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          modules = json.decode(prefs.getString('modules') ?? '[]');
+          modules.removeWhere((element) => element['slug'] == 'dashboard');
+
           for (var item in value['data']['extra']['monthly_income']) {
             data.add(_SalesData(
                 item['label'], double.parse(item['data'].toString())));
@@ -118,14 +114,21 @@ class _HomeState extends State<Home> {
           totalIncome = value['data']['extra']['year_by_income'].toString();
           totalExpense = value['data']['extra']['year_by_expence'].toString();
           totalStaffs = value['data']['extra']['staffs'].toString();
-          totalPurchase =   value['data']['extra']['purchase_products'].toString();
+          totalPurchase =
+              value['data']['extra']['purchase_products'].toString();
           totalSales = value['data']['extra']['total_sales'].toString();
           totalBalance = value['data']['extra']['total_balance'].toString();
           totalPos = value['data']['extra']['total_pos'].toString();
-          totalProducts = value['data']['extra']['total_products'].toString();    
-              
-        } catch (e) { 
-          // log(e.toString()); 
+          totalProducts = value['data']['extra']['total_products'].toString();
+          lowQuantityProducts =
+              (value['data']['extra']['low_quantity_products'] as List)
+                  .map((e) => Product.fromJson(e))
+                  .toList();
+          expiredProducts = (value['data']['extra']['expired_products'] as List)
+              .map((e) => Product.fromJson(e))
+              .toList();
+        } catch (e) {
+          // log(e.toString());
         }
       });
 
@@ -151,68 +154,64 @@ class _HomeState extends State<Home> {
             crossAxisCount: 2,
             childAspectRatio: 1.8,
             shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               XDashboardCard(
                 icon: CupertinoIcons.money_dollar_circle_fill,
                 title: '₹ $totalIncome',
                 subTitle: 'Total Income ',
                 bottomText: 'This Year',
-                value: '22%',
+                value: '',
               ),
               XDashboardCard(
                 icon: CupertinoIcons.lock_shield_fill,
                 title: '₹ $totalExpense',
                 subTitle: 'Total Expense',
                 bottomText: 'This Year',
-                value: '22%',
+                value: '',
               ),
               XDashboardCard(
                 icon: CupertinoIcons.person_2_alt,
-                title: totalStaffs, 
+                title: totalStaffs,
                 subTitle: 'Total Staffs',
                 bottomText: 'This Year',
-                value: '22%',
+                value: '',
               ),
               XDashboardCard(
                 icon: CupertinoIcons.bag_fill,
                 title: '₹ $totalPurchase',
                 subTitle: 'Total Purchase',
                 bottomText: 'This Year',
-                value: '22%',
+                value: '',
               ),
-              
               XDashboardCard(
                 icon: CupertinoIcons.money_dollar_circle_fill,
                 title: '₹ $totalSales',
                 subTitle: 'Total Sales',
                 bottomText: 'This Year',
-                value: '22%',
+                value: '',
               ),
-              
               XDashboardCard(
                 icon: CupertinoIcons.money_dollar_circle_fill,
                 title: '₹ $totalBalance',
                 subTitle: 'Total Balance',
                 bottomText: 'This Year',
-                value: '22%',
+                value: '',
               ),
-              
               XDashboardCard(
                 icon: CupertinoIcons.money_dollar_circle_fill,
                 title: '₹ $totalPos',
                 subTitle: 'Total Pos',
                 bottomText: 'This Year',
-                value: '22%',
-              ), 
-              
+                value: '',
+              ),
               XDashboardCard(
                 icon: CupertinoIcons.money_dollar_circle_fill,
                 title: '₹ $totalProducts',
                 subTitle: 'Total Products',
                 bottomText: 'This Year',
-                value: '22%',
-              ), 
-              
+                value: '',
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -305,35 +304,257 @@ class _HomeState extends State<Home> {
             ],
           ),
           const SizedBox(height: 20),
-          
-        
-        // ListView(
-        //   shrinkWrap: true,
-        //   children: modules.map((module) {
-        //     return  XMenu(
-        //       height: generateHeight(module['items'].length), 
-        //       sectionTitle: module['name'],
-        //       children: [
-        //         for (var subModule in module['items'])
-        //           XMenuItem(
-        //             icon: getRandomIcon(), 
-        //             onTap: () {
-        //               context.pushNamed(subModule['route']);
-        //             },
-        //             title: subModule['name'],
-        //           ), 
-        //       ],
-        //     );
-        //   }).toList(),
-        // ),
-          
-          
+
+          InkWell(
+            child: XCard(
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Expired Products',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorConstants.primaryColor)),
+                    Icon(Icons.arrow_forward_ios)
+                  ],
+                ),
+              ),
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => Dynamic(
+                        sectionTitle: 'Expired Products',
+                        child: XCard(
+                            showChild: expiredProducts.isNotEmpty,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                const Text('Expired Products',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    color: Colors.red[100],
+                                    child: const Text(
+                                        'Note: These products are expired. Please remove these products from your inventory.',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 14)),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: expiredProducts.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor:
+                                              ColorConstants.primaryColor,
+                                          backgroundImage: NetworkImage(
+                                              expiredProducts[index].image ??
+                                                  ''),
+                                        ),
+                                        title: Text(
+                                            expiredProducts[index].name ?? ''),
+                                        subtitle: Text(
+                                            'Expiry Date: ${expiredProducts[index].expiryDate}'),
+                                        trailing: InkWell(
+                                          onTap: () {
+                                            context.push('/product/add_product',
+                                                extra: {
+                                                  'id':
+                                                      expiredProducts[index].id,
+                                                  'extra':
+                                                      expiredProducts[index]
+                                                });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                                color: Colors.black,
+                                                borderRadius:
+                                                    BorderRadius.circular(5)),
+                                            child: const Text('VIEW',
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ),
+                                        ));
+                                  },
+                                )
+                              ],
+                            )))),
+              );
+            },
+            // child:
+          ),
+
+          const SizedBox(height: 20),
+
+          InkWell(
+            child: XCard(
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Low Quantity Products',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorConstants.primaryColor)),
+                    Icon(Icons.arrow_forward_ios)
+                  ],
+                ),
+              ),
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => Dynamic(
+                        sectionTitle: 'Low Quantity Products',
+                        child: XCard(
+                            showChild: lowQuantityProducts.isNotEmpty,
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                const Text('Low Quantity Products',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(10),
+                                    color: Colors.red[100],
+                                    child: const Text(
+                                        'Note: These products are running out of stock. Please add more quantity to these products.',
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 14)),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: lowQuantityProducts.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor:
+                                              ColorConstants.primaryColor,
+                                          backgroundImage: NetworkImage(
+                                              lowQuantityProducts[index]
+                                                      .image ??
+                                                  ''),
+                                        ),
+                                        title: Text(
+                                            lowQuantityProducts[index].name ??
+                                                ''),
+                                        subtitle: Text(
+                                            'Quantity: ${lowQuantityProducts[index].quantity}'),
+                                        trailing: InkWell(
+                                          onTap: () {
+                                            context.push('/product/add_product',
+                                                extra: {
+                                                  'id':
+                                                      lowQuantityProducts[index]
+                                                          .id,
+                                                  'extra':
+                                                      lowQuantityProducts[index]
+                                                });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                                color: Colors.red,
+                                                borderRadius:
+                                                    BorderRadius.circular(5)),
+                                            child: const Text('Fill QTY',
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ),
+                                        ));
+                                  },
+                                )
+                              ],
+                            )))),
+              );
+            },
+            // child: ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // ListView(
+          //   shrinkWrap: true,
+          //   children: modules.map((module) {
+          //     return  XMenu(
+          //       height: generateHeight(module['items'].length),
+          //       sectionTitle: module['name'],
+          //       children: [
+          //         for (var subModule in module['items'])
+          //           XMenuItem(
+          //             icon: getRandomIcon(),
+          //             onTap: () {
+          //               context.pushNamed(subModule['route']);
+          //             },
+          //             title: subModule['name'],
+          //           ),
+          //       ],
+          //     );
+          //   }).toList(),
+          // ),
+
+          XMenu(height: 0.15, sectionTitle: 'Production Management', children: [
+            XMenuItem(
+                icon: CupertinoIcons.doc_plaintext,
+                onTap: () {
+                  context.pushNamed('project.clients');
+                },
+                title: 'Clients'),
+            XMenuItem(
+                icon: CupertinoIcons.doc_plaintext,
+                onTap: () {
+                  context.pushNamed('project.teams');
+                },
+                title: 'Teams'),
+                
+                
+                XMenuItem(
+                icon: CupertinoIcons.doc_plaintext,
+                onTap: () {
+                  context.pushNamed('project.list');
+                },
+                title: 'Projects'),
+                
+                
+            XMenuItem(
+                icon: CupertinoIcons.doc_plaintext,
+                onTap: () {
+                  context.pushNamed('project.create_or_edit');
+                },
+                title: 'Create Project'),
+          ]),
+
           XMenu(
-            height: 0.15, 
+            height: 0.15,
             sectionTitle: 'HR Management',
             children: [
               XMenuItem(
-                  isHidden: modules.where((element) => element['slug'] == 'hr-management').isEmpty ?? true,
+                  isHidden: modules
+                          .where(
+                              (element) => element['slug'] == 'hr-management')
+                          .isEmpty ??
+                      true,
                   icon: CupertinoIcons.doc_plaintext,
                   onTap: () {
                     context.push('/department');

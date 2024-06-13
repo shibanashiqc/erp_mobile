@@ -55,6 +55,7 @@ class Data {
   dynamic note;
   Customer? customer;
   List<Items>? items;
+  String? salesManName;
 
   Data(
       {this.id,
@@ -78,7 +79,9 @@ class Data {
       this.country,
       this.note,
       this.customer,
-      this.items});
+      this.items,
+      this.salesManName
+      });
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -101,6 +104,7 @@ class Data {
     zip = json['zip'];
     country = json['country'];
     note = json['note'];
+    salesManName = json['sales_man_name'];
     customer = json['customer'] != null
         ? new Customer.fromJson(json['customer'])
         : null;
@@ -134,6 +138,7 @@ class Data {
     data['zip'] = this.zip;
     data['country'] = this.country;
     data['note'] = this.note;
+    data['sales_man_name'] = this.salesManName;   
     if (this.customer != null) {
       data['customer'] = this.customer!.toJson();
     }

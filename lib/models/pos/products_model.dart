@@ -59,9 +59,10 @@ class Data {
   String? modeOfReceive;
   String? billImage;
   dynamic branchId;
-  int qty = 0;
+  int qty = 1;
   bool isSelected = false;
-
+  String? barCode;
+ 
   Data(
       {this.id,
       this.productTypeId,
@@ -91,6 +92,7 @@ class Data {
       this.branchId,
       this.qty = 0,
       this.isSelected = false,  
+      this.barCode
       });
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -120,7 +122,8 @@ class Data {
     modeOfReceive = json['mode_of_receive'];
     billImage = json['bill_image'];
     branchId = json['branch_id'];
-    qty = json['qty'] ?? 0;             
+    qty = json['qty'] ?? 0;  
+    barCode = json['bar_code'];               
      
   }
 
@@ -153,6 +156,7 @@ class Data {
     data['bill_image'] = this.billImage;
     data['branch_id'] = this.branchId;
     data['qty'] = this.qty; 
+    data['bar_code'] = this.barCode; 
     return data;
   }
 }

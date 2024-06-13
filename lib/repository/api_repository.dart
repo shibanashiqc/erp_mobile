@@ -53,8 +53,8 @@ class ApiRepository {
        return res;
     }
     
-    Future<ResponseModel> post(Map<String, dynamic> data, endpoint, {multipart = false}) async {
-      var res = await _apiClient.post(data, endpoint, multipart);
+    Future<ResponseModel> post(Map<String, dynamic> data, endpoint, {multipart = false, useDio = false}) async {
+      var res = await _apiClient.post(data, endpoint, multipart, useDio);
       return res;
     } 
     

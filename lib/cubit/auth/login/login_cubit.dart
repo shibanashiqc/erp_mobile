@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:erp_mobile/models/response_model.dart';
 import 'package:erp_mobile/repository/api_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,23 +24,33 @@ class LoginCubit extends Cubit<LoginState> {
     await prefs.remove('modules');
     
   }
+  
+  Future<ResponseModel> updateUser(Map<String, dynamic> data) async {
+    try {
+      emit(const LoadingLoginState());
+      var res = await _repository.post(data, 'user/update');
+      emit(const LoadedLoginState());
+      return res;
+    } catch (e) {
+      emit(ErrorLoginState(message: e.toString()));
+      rethrow;
+    }
+  }
 
   Future<dynamic> getLoggedUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (prefs.getString('token') == null) {
       return;
     }
-    var res = await _repository.get(0, 0, 'user');
-    if (res != null) {
+    var res = await _repository.get(0, 0, 'user'); 
+    if (res != null) {  
       var modules = res['data']['modules'];
-      await prefs.setString(
+      await prefs.setString('branches', json.encode(res['data']['extra']['branches']));
+      await prefs.setString(  
           'user',
-          json.encode({
-            'name': res['data']['name'],
-            'email': res['data']['email'],
-            'profile_photo_path': res['data']['profile_photo_path'],
-          }));
-      await prefs.setString('modules', json.encode(modules));
+          json.encode(res['data']));
+      await prefs.setString('modules', json.encode(modules));  
+      await prefs.setString('current_branch_id', res['data']['current_branch_id'].toString());
       return res;   
     }
   }

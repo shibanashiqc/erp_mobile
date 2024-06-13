@@ -49,21 +49,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Widget buildScaffold(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.white,
         body: BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
       if (state is ErrorLoginState) {
         log('Error: ${state.message}');
       }
     }, builder: (context, state) {
-      return const Center(
+      return  Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
+          children: <Widget>[ 
+            
+            Image.asset('assets/images/logo.png', height: 100),
+            const SizedBox(height: 10), 
+            const SizedBox(
               height: 15,
               width: 15, 
               child: CircularProgressIndicator()),
-            SizedBox(height: 10),
-            Text('Please wait for few seconds.'), 
+            const SizedBox(height: 10),
+            const Text('Please wait for few seconds.'), 
           ],
         ),
       );

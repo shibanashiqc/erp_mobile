@@ -289,7 +289,7 @@ class ApiClient {
   }
 
   Future<ResponseModel> post(
-      Map<String, dynamic> data, String endpoint, multipart) async {
+      Map<String, dynamic> data, String endpoint, multipart, useDio) async {
     try {
       final url = '$baseURl$endpoint';
       final token = await LoginCubit().getToken();
@@ -297,6 +297,11 @@ class ApiClient {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token'
       };
+      
+      //data get files from data
+      data.forEach((key, value) {
+        log(key);  
+      });
 
       final response = await _dio
           .post(
