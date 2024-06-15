@@ -22,9 +22,12 @@ import 'package:erp_mobile/screens/pos/pos_orders.dart';
 import 'package:erp_mobile/screens/pos/reciept.dart';
 import 'package:erp_mobile/screens/product/add_product.dart';
 import 'package:erp_mobile/screens/product/product_lists.dart';
+import 'package:erp_mobile/screens/production/chat.dart';
 import 'package:erp_mobile/screens/production/client_create_or_edit.dart';
 import 'package:erp_mobile/screens/production/clients.dart';
 import 'package:erp_mobile/screens/production/project_create_or_edit.dart';
+import 'package:erp_mobile/screens/production/project_proccess.dart';
+import 'package:erp_mobile/screens/production/project_task.dart';
 import 'package:erp_mobile/screens/production/projects.dart';
 import 'package:erp_mobile/screens/production/team_create_or_edit.dart';
 import 'package:erp_mobile/screens/production/teams.dart';
@@ -70,6 +73,31 @@ final router = GoRouter(
               name: 'project.list',
               path: 'projects', 
               builder: (_, state) =>  Projects(),
+            ),
+            
+            
+            GoRoute(
+              name: 'project.proccess',
+              path: 'proccess', 
+              builder: (_, state) =>  ProjectProccess(
+                extra: state.extra, 
+              ), 
+            ),
+            
+            GoRoute(
+              name: 'project.task',
+              path: 'task', 
+              builder: (_, state) =>  ProjectTask(
+                extra: state.extra, 
+              ),
+            ), 
+            
+             GoRoute( 
+              name: 'project.chat',
+              path: 'chat', 
+              builder: (_, state) =>  Chat(
+                extra: state.extra, 
+              ),
             ),
             
             GoRoute(

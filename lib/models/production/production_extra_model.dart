@@ -26,6 +26,7 @@ class Data {
   List<User>? users;
   List<Teams>? teams;
   List<Clients>? clients;
+  List<Staffs>? staffs;
 
   Data({this.teams, this.clients});
 
@@ -51,6 +52,14 @@ class Data {
         clients!.add(new Clients.fromJson(v));
       });
     }
+    
+    if (json['staffs'] != null) {
+      staffs = <Staffs>[];
+      json['staffs'].forEach((v) {
+        staffs!.add(new Staffs.fromJson(v));
+      });
+    }
+    
   }
 
   Map<String, dynamic> toJson() {
@@ -66,9 +75,42 @@ class Data {
     if (this.clients != null) {
       data['clients'] = this.clients!.map((v) => v.toJson()).toList();
     }
+    
+    if (this.staffs != null) {
+      data['staffs'] = this.staffs!.map((v) => v.toJson()).toList();
+    }
+    
     return data;
   }
 }
+
+class Staffs {
+  int? id;
+  String? name;
+  String? email;
+
+  Staffs(
+      {this.id,
+      this.name,
+      this.email,
+      });
+
+  Staffs.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    email = json['email'];
+    
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['email'] = this.email;
+    return data;
+  }
+}
+
 
 class User {
   int? id;

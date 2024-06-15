@@ -200,8 +200,8 @@ class _TeamCreateOrEditState extends State<TeamCreateOrEdit> {
                   fields: fileds,
                   formValues: formValues,
                 ),
-                const SizedBox(height: 10),
-                if (data.isNotEmpty) ...[
+                const SizedBox(height: 10), 
+                if (widget.editId.isNotEmpty) ...[
                   XCard(
                     child: Column(
                       children: [

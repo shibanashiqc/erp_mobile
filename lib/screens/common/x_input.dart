@@ -32,6 +32,7 @@ class XInput extends StatefulWidget {
     this.child,
     this.enablePadding = false,
     this.labelExtra,
+    this.enableBgColor = true
   });
 
   bool enablePadding = false;
@@ -46,6 +47,7 @@ class XInput extends StatefulWidget {
   bool? autofocus;
   bool? isPassword;
   bool? isMandatory;
+  bool? enableBgColor;
   Icon? suffixIcon;
   double height = 0.06;
   double width = 0;
@@ -104,7 +106,7 @@ class _XInputState extends State<XInput> {
             height: widget.height * screenHeight,
             width: widget.width == 0 ? width : width * widget.width,
             decoration: BoxDecoration(
-              color: widget.color,
+              color : widget.enableBgColor == true ? widget.color : Colors.transparent, 
               borderRadius: BorderRadius.circular(widget.radius),
               // border: Border.all(color: Colors.grey.withOpacity(0.5)),
             ),

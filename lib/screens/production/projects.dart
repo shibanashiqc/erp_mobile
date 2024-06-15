@@ -113,9 +113,9 @@ class _ProjectsState extends State<Projects> {
                       return XCard(
                         child: ListTile(
                           leading: CircleAvatar(
-                            // backgroundColor: , 
+                            // backgroundColor: ,
                             child: Text(data?[index].name?[0] ?? ''),
-                          ), 
+                          ),
                           title: Text(data?[index].name ?? ''),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,148 +147,148 @@ class _ProjectsState extends State<Projects> {
                                   Text(data?[index].budget ?? ''),
                                 ],
                               ),
-                              
-                              const SizedBox(height: 10),    
-                              
+                              const SizedBox(height: 10),
                               Container(
                                 height: 10,
-                                width: screenWidth * 0.7,  
+                                width: screenWidth * 0.7,
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
                                   borderRadius: BorderRadius.circular(5),
-                                ), 
+                                ),
                                 child: FractionallySizedBox(
                                   alignment: Alignment.centerLeft,
-                                  widthFactor: double.parse(data?[index].progress ?? '0') / 100, 
-                                  child: Container( 
+                                  widthFactor: double.parse(
+                                          data?[index].progress ?? '0') /
+                                      100,
+                                  child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.blue,
                                       borderRadius: BorderRadius.circular(5),
-                                    ), 
-                                    child: Center(child: Text('${data?[index].progress} %', style: const TextStyle(color: Colors.white, fontSize: 8))),
+                                    ),
+                                    child: Center(
+                                        child: Text(
+                                            '${data?[index].progress} %',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 8))),
                                   ),
                                 ),
-                              ),  
-                              
-                              
-                               const SizedBox(height: 10),  
-                               
+                              ),
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
                                   const Icon(Icons.calendar_today, size: 16),
                                   const SizedBox(width: 5),
-                                   Text('Start Date : '.toUpperCase(), style: const TextStyle( fontSize: 10)),
-                                  Text(data?[index].startDate ?? '', style: const TextStyle( fontSize: 10)),
+                                  Text('Start Date : '.toUpperCase(),
+                                      style: const TextStyle(fontSize: 10)),
+                                  Text(data?[index].startDate ?? '',
+                                      style: const TextStyle(fontSize: 10)),
                                 ],
                               ),
-                              
                               const SizedBox(height: 10),
-                              
                               Row(
                                 children: [
                                   const Icon(Icons.calendar_today, size: 16),
                                   const SizedBox(width: 5),
-                                  Text('End Date : '.toUpperCase(), style: const TextStyle( fontSize: 10)), 
-                                  Text(data?[index].deadline ?? '', style: const TextStyle( fontSize: 10)),
+                                  Text('End Date : '.toUpperCase(),
+                                      style: const TextStyle(fontSize: 10)),
+                                  Text(data?[index].deadline ?? '',
+                                      style: const TextStyle(fontSize: 10)),
                                 ],
                               ),
-                              
                               const SizedBox(height: 10),
-                              
-                              
-                               Row(
+                              Row(
                                 children: [
-                                  const Icon(CupertinoIcons.tag, size: 16),  
+                                  const Icon(CupertinoIcons.tag, size: 16),
                                   const SizedBox(width: 5),
-                                  Text('Tasks: '.toUpperCase(), style: const TextStyle( fontSize: 10)), 
-                                  Text(data?[index].tasksCount.toString() ?? '', style: const TextStyle( fontSize: 10)),
+                                  Text('Tasks: '.toUpperCase(),
+                                      style: const TextStyle(fontSize: 10)),
+                                  Text(data?[index].tasksCount.toString() ?? '',
+                                      style: const TextStyle(fontSize: 10)),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: 
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,  
+                                children: [
+                                  XButtons(
+                                    name: 'Chat',
+                                    icon: Icons.chat,
+                                    onPressed: () {
+                                      context.pushNamed( 
+                                          'project.chat',
+                                          extra: {
+                                            'id':  data?[index].id.toString() ?? '',
+                                            'name': data?[index].name ?? '',
+                                          });
+                                    },
+                                  ),
+                                  XButtons(
+                                    name: 'Process',
+                                    icon: Icons.settings,
+                                    onPressed: () {
+                                      context.pushNamed(
+                                          'project.proccess', 
+                                          extra: {
+                                            'id':
+                                                data?[index].id.toString() ?? ''
+                                          });
+                                    },
+                                  ),
                                 ],
                               ),
                               
-                              
-                              const SizedBox(height: 20), 
-                              
-                              
-                             
+                              const SizedBox(height: 10),  
                               
                               Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        // context.go('project.chat', params: {'id': data?[index].id.toString() ?? ''});
-                                      },
-                                      icon: const Icon(Icons.chat),
-                                      label: const Text('Chat'),
-                                      style: ElevatedButton.styleFrom(
-                                        // backgroundColor: Colors.blue, 
-                                      ),
-                                    ),
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        // context.go('project.process', params: {'id': data?[index].id.toString() ?? ''});
-                                      },
-                                      icon: const Icon(Icons.settings),
-                                      label: const Text('Process'),
-                                      style: ElevatedButton.styleFrom(
-                                        // primary: Colors.green,
-                                      ),
-                                    ),
-                                   
-                                  ],
-                                ),
-                              
-                                 Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start, 
+                                children: [
+                                  // XButtons(
+                                  //   name: 'Progress',
+                                  //   icon: Icons.trending_up,
+                                  //   onPressed: () {
+                                  //     // context.pushReplacementNamed(
+                                  //     //     'project.chat',
+                                  //     //     extra: {
+                                  //     //       'id':
+                                  //     //           data?[index].id.toString() ?? ''
+                                  //     //     });
+                                  //   },
+                                  // ),
+                                  XButtons(
+                                    name: 'Add Task',
+                                    icon: Icons.add,
+                                    onPressed: () {
+                                      context.pushReplacementNamed(
+                                          'project.task',
+                                          extra: {
+                                            'id':
+                                                data?[index].id.toString() ?? ''
+                                          });
+                                    },
+                                  ),
                                   
-                                  children: [
-                                    
-                                    SizedBox(
-                                      width: screenWidth * 0.3, 
-                                      child: ElevatedButton.icon(
-                                        onPressed: () {
-                                          // context.go('project.progress', params: {'id': data?[index].id.toString() ?? ''});
-                                        }, 
-                                        icon: const Icon(Icons.trending_up, size: 16), 
-                                        label: const Text('Progress', style: TextStyle(fontSize: 10)), 
-                                        style: ElevatedButton.styleFrom(
-                                          // primary: Colors.green,
-                                        ),
-                                      ),
-                                    ),
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        // context.go('project.add_task', params: {'id': data?[index].id.toString() ?? ''});
-                                      },
-                                      icon: const Icon(Icons.add),
-                                      label: const Text('Add Task'),
-                                      style: ElevatedButton.styleFrom(
-                                        // primary: Colors.green,
-                                      ),
-                                    ),
-                                    
-                                  ],
-                                 ),
-                                 
-                                 
-                                  Row(
-                                    children: [
-                                      
-                                      ElevatedButton.icon(
-                                        onPressed: () {
-                                          // context.go('project.work_update', params: {'id': data?[index].id.toString() ?? ''});
-                                        },
-                                        icon: const Icon(Icons.update),
-                                        label: const Text('Work Update'),
-                                        style: ElevatedButton.styleFrom(
-                                          // primary: Colors.green,
-                                        ),
-                                      ),
-                                      
-                                    ],
+                                  XButtons(
+                                    name: 'Work Update',
+                                    icon: Icons.update,
+                                    onPressed: () {
+                                      // context.pushReplacementNamed(
+                                      //     'project.chat',
+                                      //     extra: {
+                                      //       'id':
+                                      //           data?[index].id.toString() ?? ''
+                                      //     });
+                                    },
                                   ),
-                                 
+                                  
+                                ],
+                              ),
                               
+                              // const SizedBox(height: 10), 
                               
                               
                             ],
@@ -317,5 +317,41 @@ class _ProjectsState extends State<Projects> {
             ));
       }),
     );
+  }
+}
+
+class XButtons extends StatelessWidget {
+  String name;
+  IconData icon;
+  Function()? onPressed;
+  XButtons({
+    super.key,
+    required this.name,
+    required this.icon,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: onPressed,
+        child: Container(
+          height: 30,
+          // width: 60,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(color: Colors.black, width: 0.4),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(icon, size: 16),
+                Text(name.toUpperCase(), style: const TextStyle(fontSize: 10)),
+              ],
+            ),
+          ),
+        ));
   }
 }

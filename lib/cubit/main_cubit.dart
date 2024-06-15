@@ -8,6 +8,7 @@ import 'package:erp_mobile/models/pos/products_model.dart';
 import 'package:erp_mobile/models/product/product_extra_model.dart';
 import 'package:erp_mobile/models/production/clients_model.dart';
 import 'package:erp_mobile/models/production/production_extra_model.dart';
+import 'package:erp_mobile/models/production/project_chat_model.dart';
 import 'package:erp_mobile/models/production/projects_model.dart';
 import 'package:erp_mobile/models/production/team_users_model.dart';
 import 'package:erp_mobile/models/production/teams_model.dart';
@@ -126,6 +127,21 @@ class MainCubit extends Cubit<MainState> {
       rethrow;
     }
   }
+  
+  Future<ProjectChatModel> getMessages(id, {limit = 8, next = 0, query}) async {
+    try { 
+      emit(const LoadingMainState());  
+      var res = await _repository.get(limit, next, 'production/project/$id/discussions', query: query);
+      res = ProjectChatModel.fromJson(res);
+      emit(LoadedMainState()); 
+      return res;
+    } catch (e) {
+      emit(ErrorMainState(message: e.toString()));
+      rethrow;
+    }
+  }
+  
+  
 
   Future<AppointmentExtraModel> getAppointmentExtra(
       {limit = 8, next = 0}) async {
@@ -220,12 +236,13 @@ class MainCubit extends Cubit<MainState> {
         validateError(res.errors!);
       } 
       emit(LoadedMainState());
-      return res;
+      return res; 
     } catch (e) {
       emit(ErrorMainState(message: e.toString()));
       rethrow;
     }
   }
+  
   
   Future<ResponseModel> createOrUpdateProject(Map<String, dynamic> data) async {
     try {
@@ -342,6 +359,21 @@ class MainCubit extends Cubit<MainState> {
       rethrow;
     }
   }
+  
+  
+  Future get(endpoint, {limit = 8, next = 0, query}) async {
+    try {
+      emit(const LoadingMainState());
+      var res =
+          await _repository.get(limit, next, endpoint, query: query);
+      emit(LoadedMainState());
+      return res;
+    } catch (e) {
+      emit(ErrorMainState(message: e.toString()));
+      rethrow;
+    }
+  }
+  
   
   Future<ClientsModel> getClients({limit = 8, next = 0, query}) async {
     try {
