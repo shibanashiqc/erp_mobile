@@ -27,11 +27,18 @@ class Data {
   List<Teams>? teams;
   List<Clients>? clients;
   List<Staffs>? staffs;
+  List<Projects>? projects;
 
   Data({this.teams, this.clients});
 
   Data.fromJson(Map<String, dynamic> json) {
     
+    if (json['projects'] != null) {
+      projects = <Projects>[];
+      json['projects'].forEach((v) {
+        projects!.add(new Projects.fromJson(v));
+      });
+    }
     
     if (json['users'] != null) {
       users = <User>[];
@@ -65,6 +72,10 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     
+    if (this.projects != null) {
+      data['projects'] = this.projects!.map((v) => v.toJson()).toList();
+    }
+    
     if (this.users != null) {
       data['users'] = this.users!.map((v) => v.toJson()).toList();
     }
@@ -83,6 +94,27 @@ class Data {
     return data;
   }
 }
+
+class Projects {
+  int? id;
+  String? name;
+  
+  Projects({this.id, this.name});
+  
+  Projects.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+  
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+  
+}
+
 
 class Staffs {
   int? id;
@@ -143,8 +175,8 @@ class Teams {
   int? personalTeam;
   String? createdAt;
   String? updatedAt;
- dynamic branchId;
- dynamic vendorId;
+  dynamic branchId;
+  dynamic vendorId;
   List<Users>? users;
 
   Teams(

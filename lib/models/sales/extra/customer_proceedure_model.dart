@@ -1,12 +1,12 @@
-class ProjectWorkModel {
+class CustomerProceedureModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  ProjectWorkModel({this.status, this.message, this.data, this.meta});
+  CustomerProceedureModel({this.status, this.message, this.data, this.meta});
 
-  ProjectWorkModel.fromJson(Map<String, dynamic> json) {
+  CustomerProceedureModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -34,45 +34,28 @@ class ProjectWorkModel {
 
 class Data {
   int? id;
-  int? projectId;
-  int? staffId;
-  String? work;
+  String? name;
+  String? price;
   String? createdAt;
   String? updatedAt;
-  dynamic vendorId;
-  String? staffName;
 
-  Data(
-      {this.id,
-      this.projectId,
-      this.staffId,
-      this.work,
-      this.createdAt,
-      this.updatedAt,
-      this.vendorId,
-      this.staffName});
+  Data({this.id, this.name, this.price, this.createdAt, this.updatedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    projectId = json['project_id'];
-    staffId = json['staff_id'];
-    work = json['work'];
+    name = json['name'];
+    price = json['price'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    vendorId = json['vendor_id'];
-    staffName = json['staff_name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['project_id'] = this.projectId;
-    data['staff_id'] = this.staffId;
-    data['work'] = this.work;
+    data['name'] = this.name;
+    data['price'] = this.price;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['vendor_id'] = this.vendorId;
-    data['staff_name'] = this.staffName;
     return data;
   }
 }

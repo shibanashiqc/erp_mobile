@@ -29,11 +29,11 @@ class _SplashScreenState extends State<SplashScreen> {
         if(value == null) {
           await context.read<LoginCubit>().logout();
           context.push('/login'); 
-        }
+        } 
         // log(value.toString()) 
         });
-        if (token != null) {
-          context.push('/dashboard');
+        if (token != null) { 
+          context.push('/dashboard'); 
         } else {
           context.push('/login'); 
         }

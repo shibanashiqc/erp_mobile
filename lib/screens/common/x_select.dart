@@ -236,10 +236,17 @@ class _ModalOptionsState extends State<ModalOptions> {
                 // width: 200,
                 child: ListView.builder(
                   itemCount: widget.widget.options.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (context, index) { 
                     return ListTile(
-                      title: Text(widget.widget.options[index].label ?? ''),
-                      subtitle: Text(widget.widget.options[index].extra),  
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,  
+                        children: [ 
+                          Text(widget.widget.options[index].label ?? ''),
+                          const SizedBox(height: 5), 
+                          Text(widget.widget.options[index].extra, style: const TextStyle(fontSize: 12, color: Colors.grey)) , 
+                        ],
+                      ),
+                      // subtitle:  Text(widget.widget.options[index].extra),  
                       onTap: () {
                         widget.widget.onChanged!(widget.widget.options[index].value);
                         Navigator.pop(context); 

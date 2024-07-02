@@ -131,8 +131,17 @@ class _CustomersState extends State<Customers> {
                             const SizedBox(height: 10),
                         itemCount: data.length, 
                         itemBuilder: (context, index) {
-                          return BuildCustomerList(
-                            data: data[index],  
+                          return InkWell( 
+                            onTap: () {
+                              context.pushNamed('customer.detail', extra: {
+                                'id': data[index].id, 
+                                'name' : data[index].name,    
+                                'extra': data[index]  
+                              }); 
+                            },
+                            child: BuildCustomerList(
+                              data: data[index],  
+                            ),
                           );
                         },
                       ), 

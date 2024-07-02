@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:erp_mobile/models/appointments/appointment_extra_model.dart';
@@ -16,6 +19,8 @@ import 'package:erp_mobile/models/response_model.dart';
 import 'package:erp_mobile/models/sales/sales_extra_model.dart';
 import 'package:erp_mobile/models/sales/sales_orders_model.dart';
 import 'package:erp_mobile/repository/api_repository.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:erp_mobile/models/pos/products_model.dart' as pos;
 
@@ -202,6 +207,41 @@ class MainCubit extends Cubit<MainState> {
       var res = await _repository.get(limit, next, 'production/team/$id/members');
       res = TeamUsersModel.fromJson(res);
       emit(LoadedMainState());
+      return res;
+    } catch (e) {
+      emit(ErrorMainState(message: e.toString()));
+      rethrow;
+    }
+  }
+  
+  Future<ResponseModel> postResDyn(endpoint, data, BuildContext context) async {
+    try {
+      emit(const LoadingMainState()); 
+      log(data.toString()); 
+      var res = await _repository.post(data, endpoint);
+      if (res.status == 'error') { 
+        validateError(res.errors!);
+      } 
+      emit(LoadedMainState());
+      alert(context, res.message ?? '',);
+      return res;
+    } catch (e) {
+      emit(ErrorMainState(message: e.toString()));
+      rethrow;
+    }
+  }
+
+
+  Future<ResponseModel> postRes(endpoint, Map<String, dynamic> data, BuildContext context) async {
+    try {
+      emit(const LoadingMainState());
+      log(data.toString());
+      var res = await _repository.post(data, endpoint);
+      if (res.status == 'error') {
+        validateError(res.errors!);
+      } 
+      emit(LoadedMainState());
+      alert(context, res.message ?? '',);
       return res;
     } catch (e) {
       emit(ErrorMainState(message: e.toString()));

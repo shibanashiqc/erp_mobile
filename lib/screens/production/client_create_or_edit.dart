@@ -43,6 +43,7 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
   List<Clients> clients = [];
   List<Teams> teams = [];
   List<sales.Country> countries = [];
+  List<sales.Customers>? customers = []; 
 
   Map<String, dynamic> formValues = {
     'edit_id': '',
@@ -68,6 +69,7 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
       
       final getExtraSales = await context.read<MainCubit>().getExtraSales();
+      
       final data = getExtraSales.data as sales.Data;
       countries = data.country ?? []; 
       
@@ -77,8 +79,36 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
          formValues = mapData;  
          formValues['edit_id'] = widget.editId;
       }
-
+      
+      customers = data.customers;
       fileds.addAll([
+        
+        Fields(
+            placeholder: 'Select Customer',
+            model: 'customer_id',
+            label: 'Customer',
+            type: '',
+            xClass: 'XSelect',
+            value: '',
+            onChanged: (){
+              formValues['name'] = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).name;
+              formValues['email'] = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).email;
+              formValues['phone'] = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).phone; 
+              
+              fileds.firstWhere((element) => element.model == 'name').isReadOnly = true;  
+              fileds.firstWhere((element) => element.model == 'name').value = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).name ?? ''; 
+              
+              fileds.firstWhere((element) => element.model == 'email').isReadOnly = true;
+              fileds.firstWhere((element) => element.model == 'email').value = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).email ?? '';
+              
+              fileds.firstWhere((element) => element.model == 'phone').isReadOnly = true;
+              fileds.firstWhere((element) => element.model == 'phone').value = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).phone ?? '';  
+              
+            },
+            options: customers?.map((e) => DropDownItem(value: e.id.toString(), label: e.name))
+                .toList(),
+          ),
+        
         Fields(
           placeholder: 'Enter Client Name',
           model: 'name',
@@ -142,7 +172,7 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
       appBar: AppBar(
         title: const Text('Clients Create Or Edit'),
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: Container( 
         height: 50,
         color: ColorConstants.primaryColor,
         child: TextButton(

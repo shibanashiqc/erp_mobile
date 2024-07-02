@@ -28,7 +28,9 @@ import 'package:erp_mobile/screens/production/clients.dart';
 import 'package:erp_mobile/screens/production/project_create_or_edit.dart';
 import 'package:erp_mobile/screens/production/project_proccess.dart';
 import 'package:erp_mobile/screens/production/project_task.dart';
+import 'package:erp_mobile/screens/production/project_work.dart';
 import 'package:erp_mobile/screens/production/projects.dart';
+import 'package:erp_mobile/screens/production/qa.dart';
 import 'package:erp_mobile/screens/production/team_create_or_edit.dart';
 import 'package:erp_mobile/screens/production/teams.dart';
 import 'package:erp_mobile/screens/profile.dart';
@@ -38,6 +40,7 @@ import 'package:erp_mobile/screens/purchase/expense.dart';
 import 'package:erp_mobile/screens/purchase/vendor.dart';
 import 'package:erp_mobile/screens/sales/create_customers.dart';
 import 'package:erp_mobile/screens/sales/create_sales_order_form.dart';
+import 'package:erp_mobile/screens/sales/customer_detail.dart';
 import 'package:erp_mobile/screens/sales/customers.dart';
 import 'package:erp_mobile/screens/sales/invoice.dart';
 import 'package:erp_mobile/screens/sales/sales_order.dart';
@@ -90,7 +93,21 @@ final router = GoRouter(
               builder: (_, state) =>  ProjectTask(
                 extra: state.extra, 
               ),
+            ),   
+            
+            GoRoute(
+              name: 'project.work',
+              path: 'work', 
+              builder: (_, state) =>  ProjectWork(
+                extra: state.extra, 
+              ),
             ), 
+            
+            GoRoute(
+              name: 'qa',
+              path: 'qa',   
+              builder: (_, state) =>  Qa(),
+            ),
             
              GoRoute( 
               name: 'project.chat',
@@ -413,6 +430,14 @@ final router = GoRouter(
             GoRoute(
               path: 'customers',
               builder: (context, state) => const Customers(),
+            ),
+            
+            GoRoute(
+              path: 'customer_detail',
+              name: 'customer.detail',
+              builder: (context, state) =>  CustomerDetail(
+                extra: state.extra, 
+              ),
             ),
 
             GoRoute(

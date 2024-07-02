@@ -1,12 +1,12 @@
-class ProjectWorkModel {
+class CustomerPrescriptionModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  ProjectWorkModel({this.status, this.message, this.data, this.meta});
+  CustomerPrescriptionModel({this.status, this.message, this.data, this.meta});
 
-  ProjectWorkModel.fromJson(Map<String, dynamic> json) {
+  CustomerPrescriptionModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -34,45 +34,77 @@ class ProjectWorkModel {
 
 class Data {
   int? id;
-  int? projectId;
-  int? staffId;
-  String? work;
+  int? customerId;
+  int? drugId;
+  String? drugName;
+  String? strength;
+  String? dosage;
+  String? duration;
+  String? durationType;
+  int? morning;
+  int? afternoon;
+  int? night;
+  int? beforeFood = 0;
+  int? afterFood = 0; 
+  String? note;
   String? createdAt;
   String? updatedAt;
-  dynamic vendorId;
-  String? staffName;
 
   Data(
       {this.id,
-      this.projectId,
-      this.staffId,
-      this.work,
-      this.createdAt,
-      this.updatedAt,
-      this.vendorId,
-      this.staffName});
+      this.customerId,
+      this.drugId,
+      this.drugName,
+      this.strength,
+      this.dosage,
+      this.duration,
+      this.durationType,
+      this.morning,
+      this.afternoon,
+      this.night,
+      this.beforeFood = 0, 
+      this.afterFood = 0,
+      this.note,
+      this.createdAt, 
+      this.updatedAt});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Data.fromJson(Map<String, dynamic> json) { 
     id = json['id'];
-    projectId = json['project_id'];
-    staffId = json['staff_id'];
-    work = json['work'];
+    customerId = json['customer_id'];
+    drugId = json['drug_id'];
+    drugName = json['drug_name'];
+    strength = json['strength'];
+    dosage = json['dosage'];
+    duration = json['duration'];
+    durationType = json['duration_type'];
+    morning = json['morning'];
+    afternoon = json['afternoon'];
+    night = json['night'];
+    beforeFood = json['before_food'];
+    afterFood = json['after_food'];
+    note = json['note'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    vendorId = json['vendor_id'];
-    staffName = json['staff_name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['project_id'] = this.projectId;
-    data['staff_id'] = this.staffId;
-    data['work'] = this.work;
+    data['customer_id'] = this.customerId;
+    data['drug_id'] = this.drugId;
+    data['drug_name'] = this.drugName;
+    data['strength'] = this.strength;
+    data['dosage'] = this.dosage;
+    data['duration'] = this.duration;
+    data['duration_type'] = this.durationType;
+    data['morning'] = this.morning;
+    data['afternoon'] = this.afternoon;
+    data['night'] = this.night;
+    data['before_food'] = this.beforeFood;
+    data['after_food'] = this.afterFood;
+    data['note'] = this.note;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['vendor_id'] = this.vendorId;
-    data['staff_name'] = this.staffName;
     return data;
   }
 }
@@ -84,7 +116,7 @@ class Meta {
   int? lastPage;
   int? from;
   int? to;
-  dynamic prevPageUrl;
+  Null? prevPageUrl;
 
   Meta(
       {this.currentPage,

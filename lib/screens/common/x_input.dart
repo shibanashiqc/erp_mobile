@@ -50,9 +50,9 @@ class XInput extends StatefulWidget {
   bool? enableBgColor;
   Icon? suffixIcon;
   double height = 0.06;
-  double width = 0;
+  double width = 0; 
   String initialValue = '';
-  String? model;
+  String? model; 
   bool onlyCard = false;
   List<Errors>? errorBags;
   Color color = ColorConstants.whiteColor;
@@ -114,7 +114,7 @@ class _XInputState extends State<XInput> {
                 ? Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      widget.initialValue,
+                      widget.initialValue ?? '',
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class _XInputState extends State<XInput> {
                                 Text(
                                   widget.initialValue == ''
                                       ? widget.hintText!
-                                      : widget.initialValue,
+                                      : widget.initialValue ?? '',
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 const Icon(Icons.calendar_today),
@@ -162,7 +162,7 @@ class _XInputState extends State<XInput> {
                                 Text(
                                   widget.initialValue == ''
                                       ? widget.hintText!
-                                      : widget.initialValue,
+                                      : widget.initialValue ?? '',
                                   style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold),
@@ -195,7 +195,7 @@ class _XInputState extends State<XInput> {
                                         Text(
                                           widget.initialValue == ''
                                               ? widget.hintText!
-                                              : widget.initialValue,
+                                              : widget.initialValue ?? '',
                                           style: const TextStyle(fontSize: 12),
                                         ),
                                         const Icon(Icons.calendar_today),
@@ -215,7 +215,7 @@ class _XInputState extends State<XInput> {
                                         Text(
                                           widget.initialValue == ''
                                               ? widget.hintText!
-                                              : widget.initialValue,
+                                              : widget.initialValue ?? '',
                                           style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.bold),
@@ -228,9 +228,9 @@ class _XInputState extends State<XInput> {
                                     // onFieldSubmitted: (value) {
                                     //   widget.onChanged!(value);
                                     // },
-                                    initialValue: widget.initialValue,
-                                    onChanged: widget.onChanged,
-                                    controller: widget.controller,
+                                    controller: widget.controller ,
+                                    initialValue: widget.initialValue == '' ? null : widget.initialValue,   
+                                    onChanged: widget.onChanged,  
                                     keyboardType: widget.keyboardType,
                                     obscureText: widget.obscureText,
                                     enabled: widget.enabled,
@@ -256,8 +256,7 @@ class _XInputState extends State<XInput> {
                                       floatingLabelBehavior:
                                           FloatingLabelBehavior.always,
                                       contentPadding:
-                                          const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 15),
+                                          const EdgeInsets.all(10.0), 
                                       hintText: widget.hintText,
                                       enabledBorder: InputBorder.none,
                                       focusedBorder: InputBorder.none,

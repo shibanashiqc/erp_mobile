@@ -1,0 +1,330 @@
+// ignore_for_file: must_be_immutable
+
+import 'dart:developer';
+
+import 'package:erp_mobile/cubit/main_cubit.dart';
+import 'package:erp_mobile/models/response_model.dart';
+import 'package:erp_mobile/screens/common/x_button.dart';
+import 'package:erp_mobile/screens/common/x_card.dart';
+import 'package:erp_mobile/screens/common/x_container.dart';
+import 'package:erp_mobile/screens/common/x_input.dart';
+import 'package:erp_mobile/screens/sales/extra/c_invoice.dart';
+import 'package:erp_mobile/screens/sales/extra/drugs.dart';
+import 'package:erp_mobile/screens/sales/extra/payments.dart';
+import 'package:erp_mobile/screens/sales/extra/prescription.dart';
+import 'package:erp_mobile/screens/sales/extra/profile_detail.dart';
+import 'package:erp_mobile/screens/sales/extra/treatment_plan_widget.dart';
+import 'package:erp_mobile/screens/sales/extra/treatments.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class CustomerDetail extends StatefulWidget {
+  Object? extra;
+  CustomerDetail({
+    super.key,
+    required this.extra,
+  });
+
+  @override
+  State<CustomerDetail> createState() => _CustomerDetailState();
+}
+
+class _CustomerDetailState extends State<CustomerDetail>
+    with SingleTickerProviderStateMixin {
+  bool loading = false;
+  List<Errors>? errorBags = [];
+  String title = 'Customer Detail';
+  late TabController tabController;
+  String customerId = '';
+
+  @override
+  void initState() {
+    try {
+      final extra = widget.extra as Map<String, dynamic>;
+      title = extra['name'].toString();
+      customerId = extra['id'].toString(); 
+
+      tabController = TabController(length: 12, vsync: this);
+      tabController.addListener(() {
+        setState(() {});
+      });
+    } catch (e) {
+      log('Error: $e');
+    }
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+        create: (context) => MainCubit(), child: buildScaffold(context));
+  }
+
+  Scaffold buildScaffold(BuildContext context) {
+    return Scaffold(
+      bottomSheet: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: XCard(
+          child: TabBar(
+            tabAlignment: TabAlignment.start,
+            isScrollable: true,
+            controller: tabController,
+            tabs: const [
+              Tab(
+                text: 'Profile',
+                icon: Icon(CupertinoIcons.person),
+              ),
+              Tab(
+                text: 'Treatment Plans',
+                icon: Icon(CupertinoIcons.text_badge_checkmark),
+              ),
+              Tab(
+                text: 'Invoice',
+                icon: Icon(CupertinoIcons.money_dollar_circle_fill),
+              ),
+              Tab(
+                text: 'Appointment',
+                icon: Icon(CupertinoIcons.calendar_today),
+              ),
+              Tab(
+                text: 'Clinical notes',
+                icon: Icon(CupertinoIcons.doc_text_fill),
+              ),
+              Tab(
+                text: 'Drugs',
+                icon: Icon(Icons.medication),
+              ),
+              Tab(
+                text: 'Prescription',
+                icon: Icon(CupertinoIcons.doc_on_clipboard),
+              ),
+              Tab(
+                text: 'Procudure',
+                icon: Icon(CupertinoIcons.doc_on_clipboard),
+              ),
+              Tab(
+                text: 'Completed Procudure',
+                icon: Icon(CupertinoIcons.doc_on_clipboard),
+              ),
+              Tab(
+                text: 'Payments',
+                icon: Icon(CupertinoIcons.money_dollar_circle_fill),
+              ),
+              Tab(text: 'Files', icon: Icon(CupertinoIcons.doc_on_clipboard)),
+              Tab(text: 'Timeline', icon: Icon(Icons.timeline)),
+            ],
+          ),
+        ),
+      ),
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: BlocConsumer<MainCubit, MainState>(listener: (context, state) {
+        if (state is ErrorMainState) {
+          log('Error: ${state.message}');
+        }
+
+        if (state is LoadedMainState) {
+          loading = false;
+        }
+
+        if (state is LoadingMainState) {
+          loading = true;
+        }
+
+        if (state is ValidationErrorState) {
+          log('Validation Error');
+          errorBags = state.errors;
+        }
+
+        if (state is ChangeFormValuesState) {}
+      }, builder: (context, state) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TabBarView(controller: tabController, children: [
+             ProfileView(
+              customerId: customerId, 
+            ),
+            Treatments(
+               customerId: customerId, 
+            ),
+             CInvoices(
+              customerId: customerId, 
+            ),
+            const Appointment(),
+            const ClinicalNotes(),
+            const Drugs(),
+             Prescription(
+              customerId: customerId, 
+            ), 
+            const Procudure(),
+            // const CompltedProcudure(),
+             Treatments(
+               customerId: customerId, 
+            ), 
+            const Payments(),
+            const Files(),
+            const Timeline(),
+          ]),
+        );
+      }),
+    );
+  }
+}
+
+class Timeline extends StatelessWidget {
+  const Timeline({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: const Text('Timeline'),
+    );
+  }
+}
+
+class Files extends StatelessWidget {
+  const Files({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: const Text('Files'),
+    );
+  }
+}
+
+class CompltedProcudure extends StatelessWidget {
+  const CompltedProcudure({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: const Text('Completed Procudure'),
+    );
+  }
+}
+
+class Procudure extends StatelessWidget {
+  const Procudure({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        XContainer(
+          child: Column(
+            children: [
+              XInput(
+                label: 'Name',
+                hintText: 'Enter name',
+              ),
+              XInput(
+                label: 'Price',
+                hintText: 'Enter price',
+              ),
+              XButton(
+                label: 'Save',
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+        XContainer(
+          child: Column(
+            children: [
+              XCard(
+                child: Column(
+                  children: const [
+                    ListTile(
+                      title: Text('ABRASION'),
+                      subtitle: Text('2000'),
+                    ),
+                    ListTile(
+                      title: Text('3M GIC FILLING	'),
+                      subtitle: Text('800'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+class ClinicalNotes extends StatelessWidget {
+  const ClinicalNotes({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        XContainer(
+          child: Column(
+            children: [
+              XInput(
+                height: 0.1,
+                label: 'Note',
+                hintText: 'Enter note',
+              ),
+              XButton(
+                label: 'Save',
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+        XContainer(
+          child: Column(
+            children: [
+              XCard(
+                child: Column(
+                  children: const [
+                    ListTile(
+                      title: Text('Note 1'),
+                      subtitle: Text('Note 1'),
+                    ),
+                    ListTile(
+                      title: Text('Note 2'),
+                      subtitle: Text('Note 2'),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class Appointment extends StatelessWidget {
+  const Appointment({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: const Text('Appointment'),
+    );
+  }
+}

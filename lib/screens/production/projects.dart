@@ -276,12 +276,12 @@ class _ProjectsState extends State<Projects> {
                                     name: 'Work Update',
                                     icon: Icons.update,
                                     onPressed: () {
-                                      // context.pushReplacementNamed(
-                                      //     'project.chat',
-                                      //     extra: {
-                                      //       'id':
-                                      //           data?[index].id.toString() ?? ''
-                                      //     });
+                                      context.pushNamed(
+                                          'project.work',
+                                          extra: { 
+                                            'id':
+                                                data?[index].id.toString() ?? ''
+                                          });
                                     },
                                   ),
                                   

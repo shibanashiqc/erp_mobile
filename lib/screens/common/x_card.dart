@@ -11,6 +11,7 @@ class XCard extends StatelessWidget {
   bool isPadding = false;
   bool showChild = true;
   bool isBorder = true; 
+  Color color = Colors.white;
   XCard(
       {super.key,
       required this.child,
@@ -19,7 +20,8 @@ class XCard extends StatelessWidget {
       this.isShimmer = false,
       this.isPadding = false,
       this.showChild = true,
-      this.isBorder = true
+      this.isBorder = true,
+      this.color = Colors.white
       });
 
   @override
@@ -28,7 +30,7 @@ class XCard extends StatelessWidget {
       width: width,
       height: height,  
       decoration: BoxDecoration( 
-        color: Colors.white, 
+        color: color, 
         borderRadius: isBorder ? BorderRadius.circular(10) :  BorderRadius.circular(0),
       ),
       child: showChild ? Container(

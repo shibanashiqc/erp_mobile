@@ -1,12 +1,12 @@
-class ProjectWorkModel {
+class QaModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  ProjectWorkModel({this.status, this.message, this.data, this.meta});
+  QaModel({this.status, this.message, this.data, this.meta});
 
-  ProjectWorkModel.fromJson(Map<String, dynamic> json) {
+  QaModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -35,44 +35,76 @@ class ProjectWorkModel {
 class Data {
   int? id;
   int? projectId;
-  int? staffId;
-  String? work;
+  int? teamId;
+  String? name;
+  String? description;
+  String? status;
+  String? priority;
+  int? createdBy;
+  String? startDate;
+  String? endDate;
   String? createdAt;
   String? updatedAt;
-  dynamic vendorId;
-  String? staffName;
+  Null? branchId;
+  Null? vendorId;
+  String? teamName;
+  String? projectName;
 
   Data(
       {this.id,
       this.projectId,
-      this.staffId,
-      this.work,
+      this.teamId,
+      this.name,
+      this.description,
+      this.status,
+      this.priority,
+      this.createdBy,
+      this.startDate,
+      this.endDate,
       this.createdAt,
       this.updatedAt,
+      this.branchId,
       this.vendorId,
-      this.staffName});
+      this.teamName,
+      this.projectName});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     projectId = json['project_id'];
-    staffId = json['staff_id'];
-    work = json['work'];
+    teamId = json['team_id'];
+    name = json['name'];
+    description = json['description'];
+    status = json['status'];
+    priority = json['priority'];
+    createdBy = json['created_by'];
+    startDate = json['start_date'];
+    endDate = json['end_date'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    branchId = json['branch_id'];
     vendorId = json['vendor_id'];
-    staffName = json['staff_name'];
+    teamName = json['team_name'];
+    projectName = json['project_name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
     data['project_id'] = this.projectId;
-    data['staff_id'] = this.staffId;
-    data['work'] = this.work;
+    data['team_id'] = this.teamId;
+    data['name'] = this.name;
+    data['description'] = this.description;
+    data['status'] = this.status;
+    data['priority'] = this.priority;
+    data['created_by'] = this.createdBy;
+    data['start_date'] = this.startDate;
+    data['end_date'] = this.endDate;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['branch_id'] = this.branchId;
     data['vendor_id'] = this.vendorId;
-    data['staff_name'] = this.staffName;
+    data['team_name'] = this.teamName;
+    data['project_name'] = this.projectName;
     return data;
   }
 }
@@ -84,7 +116,7 @@ class Meta {
   int? lastPage;
   int? from;
   int? to;
-  dynamic prevPageUrl;
+  Null? prevPageUrl;
 
   Meta(
       {this.currentPage,

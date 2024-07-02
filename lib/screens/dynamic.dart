@@ -11,7 +11,7 @@ class Dynamic extends StatelessWidget {
       appBar: AppBar(
         title: Text(sectionTitle),
       ),
-      body: child, 
+      body: SingleChildScrollView(child: child), 
     );
   }
 }

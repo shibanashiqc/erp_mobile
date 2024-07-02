@@ -512,9 +512,9 @@ class _HomeState extends State<Home> {
           //       ],
           //     );
           //   }).toList(),
-          // ),
-
-          XMenu(height: 0.15, sectionTitle: 'Production Management', children: [
+          // ), 
+ 
+          XMenu(height: 0.27, sectionTitle: 'Production Management', children: [
             XMenuItem(
                 icon: CupertinoIcons.doc_plaintext,
                 onTap: () {
@@ -543,6 +543,15 @@ class _HomeState extends State<Home> {
                   context.pushNamed('project.create_or_edit');
                 },
                 title: 'Create Project'),
+                
+                
+                 XMenuItem(
+                icon: CupertinoIcons.doc_plaintext,
+                onTap: () {
+                  context.pushNamed('qa');
+                },
+                title: 'Qa'),
+                
           ]),
 
           XMenu(

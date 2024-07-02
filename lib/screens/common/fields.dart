@@ -2,13 +2,15 @@
 import 'package:erp_mobile/screens/common/x_select.dart';
 
 class Fields {
-  final String placeholder;
-  final String model;
-  final String label;
-  final String type;
-  final String xClass;
-  final String value;
+  String placeholder;
+  String model;
+  String label;
+  String type;
+  String xClass;
+  String value;
+  bool isReadOnly = false; 
   List<DropDownItem>? options;
+  Function? onChanged;
 
   Fields({
     required this.placeholder,
@@ -17,6 +19,8 @@ class Fields {
     required this.type,
     required this.xClass,
     required this.value,
+    this.onChanged, 
+    this.isReadOnly = false, 
     this.options,
   });
 

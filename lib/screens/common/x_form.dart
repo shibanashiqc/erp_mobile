@@ -29,6 +29,7 @@ class _XFormState extends State<XForm> {
       for (Fields field in widget.fields ?? []) ...[
         if (field.xClass == 'XInput') ...[
           XInput(
+            onlyCard: field.isReadOnly,  
             errorBags: widget.errorBags,
             hintText: field.placeholder,
             label: field.label,
@@ -44,13 +45,20 @@ class _XFormState extends State<XForm> {
           XSelect(
             errorBags: widget.errorBags,
             label: field.label,
-            model: field.model,
+            model: field.model, 
             options: field.options ?? [],
             value: widget.formValues?[field.model].toString(),
             onChanged: (value) {
               widget.formValues?[field.model] = value;
-              setState(() {
+              widget.fields?.forEach((element) {
+                if (element.model == field.model) {
+                   if (element.onChanged != null) {
+                     element.onChanged!();
+                   } 
+                }
               });
+              setState(() {
+              }); 
             },
           ),
         ],
