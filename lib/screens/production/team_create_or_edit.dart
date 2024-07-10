@@ -7,6 +7,7 @@ import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/production/production_extra_model.dart';
 import 'package:erp_mobile/models/response_model.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/fields.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
@@ -55,6 +56,7 @@ class _TeamCreateOrEditState extends State<TeamCreateOrEdit> {
   Map<String, dynamic> formValues = {
     'edit_id': '',
     'name': '',
+    'personal_team' : '0', 
   };
 
   List<Fields> fileds = [];
@@ -89,11 +91,13 @@ class _TeamCreateOrEditState extends State<TeamCreateOrEdit> {
 
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
       if (widget.editId.isNotEmpty) {
-        await loadData();
-        Map<String, dynamic> mapData = {};
+        await loadData();   
+        Map<String, dynamic> mapData = {}; 
         mapData = json.decode(json.encode(widget.data));
-        formValues = mapData;
-        formValues['edit_id'] = widget.editId;
+        if(mapData['name'] != null) {
+         formValues = mapData; 
+         formValues['edit_id'] = widget.editId;
+        }
       }
 
       fileds.addAll([
@@ -122,7 +126,7 @@ class _TeamCreateOrEditState extends State<TeamCreateOrEdit> {
   Scaffold buildScaffold(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Clients Create Or Edit'),
+        title: const Text('Team Create Or Edit'),
       ),
       bottomNavigationBar: Container(
         height: 50,
@@ -137,18 +141,10 @@ class _TeamCreateOrEditState extends State<TeamCreateOrEdit> {
                         {errorBags = value.errors, setState(() {})}
                       else
                         {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Data Saved Successfully'),
-                            ),
-                          ),
+                          alert(context, 'Data Saved Successfully'), 
                           if (widget.onSaved != null) {widget.onSaved!()},
                           setState(() {}),
-                          if (formValues['edit_id'] == null)
-                            {
-                              context.pushReplacementNamed(
-                                  'project.client_create_or_edit'),
-                            },
+                          context.pop(),  
                         }
                     });
           },
@@ -201,7 +197,7 @@ class _TeamCreateOrEditState extends State<TeamCreateOrEdit> {
                   formValues: formValues,
                 ),
                 const SizedBox(height: 10), 
-                if (widget.editId.isNotEmpty) ...[
+                if (formValues['edit_id'] != '') ...[ 
                   XCard(
                     child: Column(
                       children: [
@@ -329,7 +325,7 @@ class _ModalItemsState extends State<ModalItems> {
           ),
           XSelect(
             value: formValues['user_id'],
-            label: 'Select User',
+            label: 'Select Staff',
             options: widget.users
                 .map((e) => DropDownItem(
                       value: e.id.toString(),

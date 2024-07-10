@@ -49,6 +49,7 @@ class Data {
   String? taxRate; 
   String? purchasePrice;
   String? salePrice;
+  dynamic totalPrice; 
   String? createdAt;
   String? updatedAt;
   int? productUnitId;
@@ -80,6 +81,7 @@ class Data {
       this.taxRate,
       this.purchasePrice,
       this.salePrice,
+      this.totalPrice,
       this.createdAt,
       this.updatedAt,
       this.productUnitId,
@@ -112,6 +114,7 @@ class Data {
     taxRate = json['tax_rate'];
     purchasePrice = json['purchase_price'];
     salePrice = json['sale_price'];
+    totalPrice = json['total_price'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     productUnitId = json['product_unit_id'];
@@ -145,6 +148,7 @@ class Data {
     data['tax_rate'] = this.taxRate;
     data['purchase_price'] = this.purchasePrice;
     data['sale_price'] = this.salePrice;
+    data['total_price'] = this.totalPrice;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['product_unit_id'] = this.productUnitId;

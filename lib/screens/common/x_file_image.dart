@@ -22,7 +22,7 @@ class XFileImage extends StatefulWidget {
     this.isMandatory = false,
     required this.onChanged,
     this.allowMultiple = false,
-    this.file, 
+    this.file,
   });
 
   @override
@@ -38,19 +38,21 @@ class _XFileImageState extends State<XFileImage>
   void selectFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: widget.allowMultiple,
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+      type: FileType.any,
+      // allowedExtensions: ['*'],
+      //allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', ],
     );
     if (result != null) {
       _platformFile = result.files.first;
       _files = result.paths.map((path) => File(path!)).toList();
       loadingController.forward();
-      File file = File(result.files.single.path!);
       setState(() {});
       if (widget.allowMultiple == true) {
         widget.onChanged!(_files);
-      } 
-      widget.onChanged!(file);
+      } else {
+        File file = File(result.files.single.path!);
+        widget.onChanged!(file);
+      }
     }
   }
 
@@ -62,20 +64,19 @@ class _XFileImageState extends State<XFileImage>
     )..addListener(() {
         setState(() {});
       });
-          
+
     if (widget.file != null) {
       _files = [widget.file!];
-      setState(() {
-      });  
-    } 
-    super.initState(); 
+      setState(() {});
+    }
+    super.initState();
   }
-  
+
   @override
-  void dispose() { 
+  void dispose() {
     loadingController.dispose();
     super.dispose();
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +231,7 @@ class _XFileImageState extends State<XFileImage>
                                   width: 10,
                                 ),
                               ],
-                            )
-                            );
+                            ));
                       }),
                   const SizedBox(
                     height: 20,

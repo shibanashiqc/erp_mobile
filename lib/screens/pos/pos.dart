@@ -502,7 +502,7 @@ class _PosState extends State<Pos> {
                                                                   .map((e) =>
                                                                       e.qty *
                                                                       double.parse(e
-                                                                          .price
+                                                                          .totalPrice
                                                                           .toString()))
                                                                   .reduce((value,
                                                                           element) =>
@@ -561,7 +561,7 @@ class _PosState extends State<Pos> {
                                                                   .map((e) =>
                                                                       e.qty *
                                                                       double.parse(e
-                                                                          .price
+                                                                          .totalPrice
                                                                           .toString()))
                                                                   .reduce((value,
                                                                           element) =>
@@ -604,7 +604,7 @@ class _PosState extends State<Pos> {
                                                                 .map((e) =>
                                                                     e.qty *
                                                                     double.parse(e
-                                                                        .price
+                                                                        .totalPrice
                                                                         .toString()))
                                                                 .reduce((value,
                                                                         element) =>

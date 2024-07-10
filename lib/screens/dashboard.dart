@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:erp_mobile/cubit/auth/login/login_cubit.dart';
 import 'package:erp_mobile/screens/apointments.dart';
+import 'package:erp_mobile/screens/apps_widget.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
 import 'package:erp_mobile/screens/common/x_select.dart';
 import 'package:erp_mobile/screens/drawer.dart';
@@ -196,13 +197,20 @@ class _DashbaordState extends State<Dashbaord> {
             });
           },
           items: const <BottomNavigationBarItem>[
+            
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.square_grid_2x2),
+              icon: Icon(CupertinoIcons.home),
               label: 'Home',
             ),
+            
+            // BottomNavigationBarItem(
+            //   icon: Icon(CupertinoIcons.square_grid_2x2),
+            //   label: 'Apps',
+            // ),
+            
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.bell),
-              label: 'Notifications',
+              icon: Icon(CupertinoIcons.square_grid_2x2), 
+              label: 'Menu', 
             ),
 
             BottomNavigationBarItem(
@@ -220,10 +228,7 @@ class _DashbaordState extends State<Dashbaord> {
           index: currentPageIndex,
           children: const <Widget>[
             Home(),
-            Center(
-              child: Text('Notifications'),
-            ),
-
+            AppsWidget(), 
             Appointments(),
 
             // Center(
@@ -235,6 +240,8 @@ class _DashbaordState extends State<Dashbaord> {
     );
   }
 }
+
+
 
 class DrawerList extends StatefulWidget {
   String title;

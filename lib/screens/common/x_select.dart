@@ -56,6 +56,7 @@ class _XSelectState extends State<XSelect> {
             ? const EdgeInsets.only(left: 10, right: 10)
             : const EdgeInsets.all(0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, 
           children: [
             if (widget.label != null)
               Padding(

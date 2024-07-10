@@ -15,6 +15,8 @@ import 'package:erp_mobile/models/response_model.dart';
 import 'package:erp_mobile/models/sales/customers_model.dart';
 import 'package:erp_mobile/models/sales/sales_extra_model.dart';
 import 'package:erp_mobile/repository/api_repository.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'hr_state.dart';
@@ -71,6 +73,28 @@ class HrCubit extends Cubit<HrState> {
       rethrow;
     }
   }
+  
+  void validateError(List<Errors> errors) {
+    emit(ValidationErrorState(errors: errors));
+  }
+  
+  Future<ResponseModel> postRes(endpoint, Map<String, dynamic> data, BuildContext context, {multipart = false}) async {
+    try {
+      emit(const LoadingHrState());
+      log(data.toString());
+      var res = await _repository.post(data, endpoint, multipart: multipart);
+      if (res.status == 'error') {
+        validateError(res.errors!);
+      } 
+      emit(const LoadedHrState());
+      alert(context, res.message ?? '',);
+      return res;
+    } catch (e) {
+      emit(ErrorHrState(message: e.toString()));
+      rethrow;
+    }
+  }
+
 
   Future<CustomersModel> getCustomers({limit = 10, next = 0, query}) async {
     try {

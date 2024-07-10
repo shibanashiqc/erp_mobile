@@ -38,21 +38,27 @@ class _ProjectCreateOrEditState extends State<ProjectCreateOrEdit> {
     'name': '',
     'tags': '',
     'description': '',
-    'start_date': DateTime.now().toString(),
-    'deadline': DateTime.now().toString(),
+    'start_date': DateTime.now().toString().substring(0, 10), 
+    'deadline': DateTime.now().toString().substring(0, 10),
     'budget': '0.00',
     'documents': [],
   };
 
-  @override
-  void initState() {
-    final getExtraProduction = context.read<MainCubit>().getExtraProduction();
+  
+  loadData()
+  {
+     final getExtraProduction = context.read<MainCubit>().getExtraProduction();
     getExtraProduction.then((value) {
       final data = value.data as Data;
       clients = data.clients ?? [];
       teams = data.teams ?? [];
       setState(() {});
     });
+  }
+  
+  @override
+  void initState() {
+    loadData();
     super.initState();
   }
 
@@ -74,9 +80,13 @@ class _ProjectCreateOrEditState extends State<ProjectCreateOrEdit> {
         color: ColorConstants.primaryColor,
         child: TextButton(
           onPressed: () async {
+            
+            Map<String, dynamic> data = formValues;
+            data['documents'] = data['documents'].map((e) => e as MultipartFile).toList(); 
+            
             await context
                 .read<MainCubit>()
-                .createOrUpdateProject(formValues)
+                .createOrUpdateProject(data, context) 
                 .then((value) => {
                       if (value.errors != null)
                         {errorBags = value.errors, setState(() {})}
@@ -93,11 +103,7 @@ class _ProjectCreateOrEditState extends State<ProjectCreateOrEdit> {
                             'budget': '0.00',
                             'documents': [],
                           }, 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Project Created Successfully'),
-                            ),
-                          ),
+                         
                           setState(() {}), 
                         }
                     });
@@ -166,22 +172,34 @@ class _ProjectCreateOrEditState extends State<ProjectCreateOrEdit> {
                   },
                 ),
                 const SizedBox(width: 5),
-                XSelect(
-                  errorBags: errorBags,
-                  model: 'client_id',
-                  label: 'Client',
-                  value: formValues['client_id'],
-                  width: 0.47,
-                  height: 0.04,
-                  placeholder: 'Select Client',
-                  options: clients.map((e) {
-                    return DropDownItem(value: e.id.toString(), label: e.name);
-                  }).toList(),
-                  onChanged: (value) {
-                    context
-                        .read<MainCubit>()
-                        .changeFormValues('client_id', value);
-                  },
+                Column(
+                  children: [
+                    InkWell(
+                      onTap: () { 
+                        context.pushNamed('project.client_create_or_edit', extra: {'onSaved' : loadData});  
+                      },  
+                      child: const Text('Add New Client', style: TextStyle(color: ColorConstants.primaryColor, fontSize: 8),)), 
+                    
+                    XSelect(
+                      errorBags: errorBags,
+                      model: 'client_id',
+                      label: 'Client',
+                      value: formValues['client_id'],
+                      width: 0.47,
+                      height: 0.04,
+                      placeholder: 'Select Client',
+                      options: clients.map((e) {
+                        return DropDownItem(value: e.id.toString(), label: e.name);
+                      }).toList(),
+                      onChanged: (value) {
+                        context
+                            .read<MainCubit>()
+                            .changeFormValues('client_id', value);
+                      },
+                    ),
+                    
+                    
+                  ],
                 ),
               ],
             ),
@@ -215,8 +233,9 @@ class _ProjectCreateOrEditState extends State<ProjectCreateOrEdit> {
             const SizedBox(height: 5),
 
             XInput(
+              height: 0.1, 
               errorBags: errorBags,
-              model: 'description',
+              model: 'description', 
               label: 'Project Overview',
               initialValue: formValues['description'],
               onChanged: (value) {
@@ -259,7 +278,6 @@ class _ProjectCreateOrEditState extends State<ProjectCreateOrEdit> {
             ),
  
             XFileImage(
-               
                 allowMultiple: true, 
                 onChanged: (file) async {
                   List files = []; 

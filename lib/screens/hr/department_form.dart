@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
 import 'package:erp_mobile/models/response_model.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/x_button.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -56,11 +57,9 @@ class _DepartmentFormState extends State<DepartmentForm> {
             'description': description, 
             'status': status,
           }).then((value) {  
-            if (value.status == 'error') { 
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(value.message.toString()))); 
-            }
-            widget.onSaved!(); 
+            alert(context, value.message!); 
+            widget.onSaved != null ? widget.onSaved!() : null; 
+            Navigator.pop(context); 
           });
         },
       ),

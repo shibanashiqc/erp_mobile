@@ -1,16 +1,23 @@
+import 'dart:developer';
+
+import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/sales/extra/customer_extra_model.dart'
     as customer_extra_model;
 import 'package:erp_mobile/models/sales/extra/customer_payment_model.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/x_button.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
 import 'package:erp_mobile/screens/common/x_select.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddPayments extends StatefulWidget {
-  const AddPayments({
+  String customerId;
+  AddPayments({
     super.key,
+    required this.customerId,
   });
 
   @override
@@ -22,26 +29,46 @@ class _AddPaymentsState extends State<AddPayments> {
   TextEditingController amountPaidController = TextEditingController(text: '0');
   List<Invoices>? items = [];
   Data data = Data();
-  List<customer_extra_model.Invoices> invoices = [
-    customer_extra_model.Invoices(
-        invoiceNumber: 'INV-2021-0001',
-        grandTotal: '1000',
-        createdAt: '2021-01-01',
-        items: [
-          customer_extra_model.Items(
-              id: 1, itemName: 'ALBANTAZOL', total: '2000'),
-        ]),
-  ];
+  List<customer_extra_model.Invoices> invoices = [];
+
+  fetchExtra() {
+    context
+        .read<MainCubit>()
+        .get('sales/customer/extra?customer_id=${widget.customerId}')
+        .then((value) {
+      final res = customer_extra_model.CustomerExtraModel.fromJson(value);
+      if (res.data != null) {
+        log('Data: ${res.data}');
+        setState(() {
+          invoices = res.data?.invoices ?? [];
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
     data.amountToPay = '0';
     data.amountRemaining = '0';
     data.amountPaid = '0';
+    data.recieptNumber = 'INV-0000${DateTime.now().millisecondsSinceEpoch}';
+    data.modeOfPayment = 'cash'; 
+    fetchExtra();
     super.initState();
   }
 
-  void updatedItems(index) {}
+  void updatedItems() {
+    data.amountToPay = items
+        ?.fold(
+            0,
+            (previousValue, element) =>
+                previousValue + double.parse(element.amountPaid ?? '0').toInt())
+        .toString();
+
+    amountPaidController.text = data.amountToPay ?? '0';
+    data.amountPaid = data.amountToPay;
+    setState(() {});
+  }
 
   void addItem(customer_extra_model.Invoices item, {adding = true}) {
     if (item.id != 0 && adding) {
@@ -58,12 +85,13 @@ class _AddPaymentsState extends State<AddPayments> {
         ?.fold(
             0,
             (previousValue, element) =>
-                previousValue + int.parse(element.amountPaid ?? '0'))
+                previousValue + double.parse(element.amountPaid ?? '0').toInt())
         .toString();
-    
-    amountPaidController.text = data.amountToPay ?? '0';  
+
+    data.amountPaid = data.amountToPay;
+    amountPaidController.text = data.amountToPay ?? '0';
     setState(() {});
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +103,30 @@ class _AddPaymentsState extends State<AddPayments> {
           padding: const EdgeInsets.all(8.0),
           child: XButton(
             label: 'Save Payments',
-            onPressed: () {},
+            onPressed: () {
+              if (items?.isEmpty ?? true) {
+                alert(context, 'Please select invoices to pay.');
+                return;
+              }
+              if (data.amountPaid == '0') {
+                alert(context, 'Please enter amount to pay.');
+                return;
+              }
+
+              data.invoices = items;
+
+              context
+                  .read<MainCubit>()
+                  .postRes(
+                      'sales/customer/${widget.customerId}/payments/create',
+                      data.toJson(),
+                      context)
+                  .then((value) {
+                       if(value.errors == null){
+                        Navigator.pop(context); 
+                       } 
+                  });
+            },
           ),
         ),
         appBar: AppBar(
@@ -122,8 +173,8 @@ class _AddPaymentsState extends State<AddPayments> {
                         CircleAvatar(
                             radius: 12,
                             backgroundColor: Colors.red.shade900,
-                            child: const Text('2',
-                                style: TextStyle(
+                            child: Text('${invoices.length}',
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold))),
@@ -156,6 +207,7 @@ class _AddPaymentsState extends State<AddPayments> {
                                           size: 16),
                                       onPressed: () {
                                         items?.removeAt(index);
+                                        updatedItems();
                                         setState(() {});
                                       },
                                     ),
@@ -276,22 +328,24 @@ class _AddPaymentsState extends State<AddPayments> {
                                             color: Colors.black,
                                             fontWeight: FontWeight.bold)),
                                     const Spacer(),
-                                    Text(
-                                        (double.parse(invoices
-                                                        .firstWhere((element) =>
-                                                            element
-                                                                .invoiceNumber ==
-                                                            items?[index]
-                                                                .invoiceNumber)
-                                                        .grandTotal ??
-                                                    '0') -
-                                                double.parse(
-                                                    data.amountPaid ?? '0'))
-                                            .toString(),
-                                        style: const TextStyle(
+                                    const Text('0',
+                                        style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold)),
+                                    // Text((
+                                    //     double.parse(invoices
+                                    //                     .firstWhere((element) =>
+                                    //                         element
+                                    //                             .invoiceNumber ==
+                                    //                         items?[index]
+                                    //                             .invoiceNumber)
+                                    //                     .grandTotal ??
+                                    //                 '0') - double.parse(data.amountPaid ?? '0')).toString(),
+                                    //     style: const TextStyle(
+                                    //         fontSize: 13,
+                                    //         color: Colors.red,
+                                    //         fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ],
@@ -324,10 +378,11 @@ class _AddPaymentsState extends State<AddPayments> {
                           ),
                           const SizedBox(height: 10),
                           XInput(
-                            controller: amountPaidController, 
+                            controller: amountPaidController,
                             label: 'PAY NOW',
                             onChanged: (value) {
                               data.amountPaid = value;
+                              updatedItems();
                             },
                           ),
                           Row(
@@ -384,6 +439,10 @@ class PendingInvoices extends StatefulWidget {
 }
 
 class _PendingInvoicesState extends State<PendingInvoices> {
+  dataFormat(String date) {
+    return date.split('T')[0];
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -436,7 +495,9 @@ class _PendingInvoicesState extends State<PendingInvoices> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.red)),
                               const SizedBox(width: 10),
-                              Text(widget.invoices[index].createdAt ?? '',
+                              Text(
+                                  dataFormat(
+                                      widget.invoices[index].createdAt ?? ''),
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold)),
                             ],

@@ -40,7 +40,7 @@ class _CartState extends State<Cart> {
   dynamic customerId;
   dynamic discountAmount = 0;
   dynamic taxAmount = 0;
-  dynamic tax = 0.10;
+  dynamic tax = 0;
   String paymentMode = 'Cash';
   DateTime focusedDay = DateTime.now();
   List<Errors> errorBags = [];
@@ -154,14 +154,20 @@ class _CartState extends State<Cart> {
 
     try {
       var subTotal = widget.products
-          .map((e) => e.qty * double.parse(e.price.toString()))
+          .map((e) => e.qty * double.parse(e.totalPrice.toString()))
           .reduce((value, element) => value + element);
+      
+      var originalPrice = widget.products
+          .map((e) => e.qty * double.parse(e.price.toString()))
+          .reduce((value, element) => value + element);  
+          
+      taxAmount =  subTotal - originalPrice;
       widget.subTotal = subTotal;
-      taxAmount = (tax / 100) * double.parse(subTotal.toString());
-      widget.grandTotal = subTotal - discountAmount + taxAmount;
+      // taxAmount = (tax / 100) * double.parse(subTotal.toString());
+      widget.grandTotal = subTotal - discountAmount;
     } catch (e) {
       log('Error: $e');
-    } finally {
+    } finally { 
       calculationLoading = false;
       setState(() {});
     }
@@ -197,6 +203,15 @@ class _CartState extends State<Cart> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  
+                  Text(
+                    '@including tax ₹${taxAmount.toStringAsFixed(3)}',  
+                    style: const TextStyle( 
+                      fontSize: 7,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  
                 ],
               ),
               Container(
@@ -742,19 +757,19 @@ class _CartState extends State<Cart> {
                         keyboardType: TextInputType.number,
                       ),
                       const SizedBox(height: 5),
-                      XInput(
-                        readOnly: true,
-                        initialValue: taxAmount.toString(),
-                        onChanged: (val) {
-                          context
-                              .read<MainCubit>()
-                              .changeFormValues('tax', val);
-                        },
-                        label: 'Tax',
-                        hintText: 'Tax',
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 5),
+                      // XInput(
+                      //   readOnly: true,
+                      //   initialValue: taxAmount.toString(),
+                      //   onChanged: (val) {
+                      //     context
+                      //         .read<MainCubit>()
+                      //         .changeFormValues('tax', val);
+                      //   },
+                      //   label: 'Tax',
+                      //   hintText: 'Tax',
+                      //   keyboardType: TextInputType.number,
+                      // ),
+                      // const SizedBox(height: 5),
                       XSelect(
                         errorBags: errorBags,
                         model: 'payment_method',

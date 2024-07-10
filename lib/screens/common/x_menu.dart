@@ -11,8 +11,8 @@ class XMenu extends StatefulWidget {
       {super.key,
       required this.sectionTitle,
       required this.children,
-      this.height = 0.0,
-      this.isShow = false});
+      this.height = 0.0, 
+      this.isShow = false}); 
 
   @override
   State<XMenu> createState() => _XMenuState();
@@ -23,6 +23,7 @@ class _XMenuState extends State<XMenu> {
   Widget build(BuildContext context) {
     num screenHeight = MediaQuery.of(context).size.height;
     return Column(
+      mainAxisSize: MainAxisSize.min, 
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -31,8 +32,9 @@ class _XMenuState extends State<XMenu> {
             widget.isShow = !widget.isShow;
             // ignore: invalid_use_of_protected_member
             setState(() {});
-          },
+          }, 
           child: Container(
+            height: 0.09 * screenHeight ,
             width: double.infinity,
             color: Colors.white,
             child: Padding(
@@ -54,12 +56,14 @@ class _XMenuState extends State<XMenu> {
                             // ignore: invalid_use_of_protected_member
                             setState(() {});
                           },
-                          child: Text(
-                            widget.isShow == false ? 'Show More' : 'Show Less',
-                            style: const TextStyle( 
-                                color: Colors.blue,
-                                ),
-                          ),
+                          
+                          child: const Icon(Icons.arrow_drop_up), 
+                          // child: Text(
+                          //   widget.isShow == false ? 'Show More' : 'Show Less',
+                          //   style: const TextStyle( 
+                          //       color: Colors.blue,
+                          //       ),
+                          // ),
                         ),
                 ],
               ),
@@ -76,7 +80,8 @@ class _XMenuState extends State<XMenu> {
                     height: 9,
                   ),
                   SizedBox(
-                    height: screenHeight * widget.height,
+                    height: 0.13 * screenHeight * (widget.children.length / 4).ceil(),
+                    // height: screenHeight * widget.height,
                     child: GridView.count(
                         physics: const NeverScrollableScrollPhysics(),
                         crossAxisCount: 4,

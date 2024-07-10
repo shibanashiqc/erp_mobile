@@ -1,12 +1,38 @@
+import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/sales/extra/add_payments.dart';
  import 'package:flutter/material.dart';
+import 'package:erp_mobile/models/sales/extra/customer_payment_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Payments extends StatelessWidget {
-  const Payments({
+class Payments extends StatefulWidget {
+   String customerId;
+   Payments({
     super.key,
+    required this.customerId,  
   });
 
+  @override
+  State<Payments> createState() => _PaymentsState();
+}
+
+class _PaymentsState extends State<Payments> {
+  List<Data> data = [];
+  bool loading = true;
+  @override
+  void initState() {
+    context.read<MainCubit>().get('sales/customer/${widget.customerId}/payments').then((value) {
+      final res = CustomerPatmentModel.fromJson(value);
+      if (res.data != null) { 
+        setState(() {
+          data = res.data ?? [];
+          loading = false; 
+        });
+      } 
+    });
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -25,7 +51,9 @@ class Payments extends StatelessWidget {
                     isScrollControlled: true,
                     context: context,
                     builder: (BuildContext context) {
-                      return const AddPayments();
+                      return  AddPayments(
+                        customerId: widget.customerId, 
+                      );
                     },
                   );
                 },
@@ -50,7 +78,7 @@ class Payments extends StatelessWidget {
           ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 10,
+            itemCount: data.length,
             separatorBuilder: (context, index) {
               return const SizedBox(height: 10);
             },
@@ -59,8 +87,8 @@ class Payments extends StatelessWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 5),
-                    const Text('REC-202406271309592980',
-                        style: TextStyle(
+                     Text(data[index].recieptNumber ?? '',
+                        style: const TextStyle(
                             fontSize: 15, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
 
@@ -82,8 +110,8 @@ class Payments extends StatelessWidget {
                                     style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
-                                const Text('7600.00',
-                                    style: TextStyle(
+                                 Text(data[index].amountPaid ?? '',
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
                               ],
@@ -96,8 +124,8 @@ class Payments extends StatelessWidget {
                                     style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
-                                const Text('2',
-                                    style: TextStyle(
+                                 Text(data[index].invoices?.length.toString() ?? '', 
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
                               ],
@@ -110,8 +138,8 @@ class Payments extends StatelessWidget {
                                     style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
-                                const Text('cash',
-                                    style: TextStyle(
+                                 Text(data[index].modeOfPayment ?? '',
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
                               ],
@@ -124,8 +152,8 @@ class Payments extends StatelessWidget {
                                     style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
-                                const Text('2024-06-27',
-                                    style: TextStyle(
+                                 Text(data[index].createdAt ?? '',
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold)),
                               ],
@@ -147,10 +175,10 @@ class Payments extends StatelessWidget {
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                                 color: Colors.blue, 
                               ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text('Only paid half of the amount.',
-                                    style: TextStyle(
+                              child:  Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(data[index].notes ?? '', 
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white)),

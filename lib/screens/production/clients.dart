@@ -67,12 +67,20 @@ class _ClientsState extends State<Clients> {
       appBar: AppBar(
         title: const Text('Clients'),
         actions: [
-          IconButton(
-            onPressed: () {
-              context.pushNamed('project.client_create_or_edit');
-            },
-            icon: const Icon(Icons.add),
-          ),
+          TextButton(
+              onPressed: () {
+                context.pushNamed('project.client_create_or_edit', extra: {
+                  'onSaved': loadData
+                }); 
+              },
+              child: Text('Add Client', )),
+
+          // IconButton(
+          //   onPressed: () {
+          //     context.pushNamed('project.client_create_or_edit');
+          //   },
+          //   icon: const Icon(Icons.add),
+          // ),
         ],
       ),
       body: BlocConsumer<MainCubit, MainState>(listener: (context, state) {
@@ -115,11 +123,11 @@ class _ClientsState extends State<Clients> {
                       onTap: () {
                         context.pushNamed('project.client_create_or_edit',
                             extra: {
-                              'id': data[index].id, 
+                              'id': data[index].id,
                               'extra': data[index],
                               'onSaved': loadData
                             });
-                      }, 
+                      },
                     ),
                   ),
                 );

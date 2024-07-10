@@ -205,295 +205,333 @@ class _AppointmentsState extends State<Appointments> {
 
           if (state is RefreshMainState) {}
         }, builder: (context, state) {
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorConstants.purpleColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+          return Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return CreateAppointment(
+                      customers: customers,
+                      doctors: doctors,
+                      branches: branches,
+                      appointmentTypes: appointmentTypes,
+                      refresh: refresh,
+                    );
+                  },
+                );
+              },
+              child: const Icon(Icons.add),
+            ), 
+            body: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       ElevatedButton(
+                  //           style: ElevatedButton.styleFrom(
+                  //             backgroundColor: ColorConstants.purpleColor,
+                  //             shape: RoundedRectangleBorder(
+                  //               borderRadius: BorderRadius.circular(5),
+                  //             ),
+                  //           ),
+                  //           onPressed: () {
+                  //             showModalBottomSheet(
+                  //               context: context,
+                  //               isScrollControlled: true,
+                  //               builder: (BuildContext context) {
+                  //                 return CreateAppointment(
+                  //                   customers: customers,
+                  //                   doctors: doctors,
+                  //                   branches: branches,
+                  //                   appointmentTypes: appointmentTypes,
+                  //                   refresh: refresh,
+                  //                 );
+                  //               },
+                  //             );
+                  //           },
+                  //           child: const Text('Create Appointment',
+                  //               style: TextStyle(
+                  //                   color: Colors.white,
+                  //                   fontSize: 15,
+                  //                   fontWeight: FontWeight.bold))),
+                  //     ],
+                  //   ),
+                  // ),
+                
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.9,
+                    child: XCard(
+                      child: MonthView(
+                        headerStyle: const HeaderStyle(
+                          headerTextStyle: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          onPressed: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              builder: (BuildContext context) {
-                                return CreateAppointment(
-                                  customers: customers,
-                                  doctors: doctors,
-                                  branches: branches,
-                                  appointmentTypes: appointmentTypes,
-                                  refresh: refresh,
-                                );
-                              },
-                            );
-                          },
-                          child: const Text('Create Appointment',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold))),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.9,
-                  child: XCard(
-                    child: MonthView(
-                      headerStyle: const HeaderStyle(
-                        headerTextStyle: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                        ),
-                      ),
-                      key: _formKey,
-                      controller: controller,
-                      // to provide custom UI for month cells.
-                      cellBuilder: (date, events, isToday, isInMonth) {
-                        // Return your widget to display as month cell.
-                        return Column(
-                          children: [
-                            Text(
-                              date.day.toString(),
-                              style: TextStyle(
-                                color: isToday ? Colors.black : Colors.grey,
-                                fontWeight: FontWeight.bold,
+                        key: _formKey,
+                        controller: controller,
+                        // to provide custom UI for month cells.
+                        cellBuilder: (date, events, isToday, isInMonth) {
+                          // Return your widget to display as month cell.
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,   
+                            children: [
+                              Text(
+                                date.day.toString(),
+                                style: TextStyle(
+                                  color: isToday ? Colors.black : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-
-                            // Display events on the cell.
-                            // if (events.isNotEmpty)
-                            // Expanded(
-                            //   child: ListView.builder(
-                            //     itemCount: events.length,
-                            //     itemBuilder: (context, index) {
-                            //       return Container(
-                            //           decoration: BoxDecoration(
-                            //             color: Colors.red.withOpacity(0.2),
-                            //             borderRadius: BorderRadius.circular(5),
-                            //           ),
-                            //           child: Text(events[index].title));
-                            //     },
-                            //   ),
-                            // ),
-                          ],
-                        );
-                      },
-
-                      cellAspectRatio: 0.8,
-                      borderSize: 0.5,
-                      onPageChange: (date, pageIndex) =>
-                          print("$date, $pageIndex"),
-                      onCellTap: (events, date) {
-                        if (events.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No appointment on this date'),
-                            ),
+                           
+                               if (events.isNotEmpty)
+                                Container(
+                                  height: 20, 
+                                  width: 20, 
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(child: Text(events.length.toString(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), 
+                                )),
+                                
+            
+                        
+                              // Display events on the cell.
+                              // if (events.isNotEmpty)
+                              // Padding(
+                              //   padding: const EdgeInsets.all(8.0),
+                              //   child: Expanded(
+                              //     child: ListView.builder(
+                              //       itemCount: events.length,
+                              //       itemBuilder: (context, index) {
+                              //         return Container(
+                              //             decoration: BoxDecoration(
+                              //               color: Colors.red.withOpacity(0.2),
+                              //               borderRadius: BorderRadius.circular(5),
+                              //             ),
+                              //             child: Text(events[index].title));
+                              //       },
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
                           );
-                          return;
-                        }
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (BuildContext context) {
-                            return Container(
-                              height: MediaQuery.of(context).size.height *
-                                  0.8, // Adjust height as needed
-                              color: const Color.fromRGBO(255, 255, 255, 1),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: EventView(
-                                    refresh: refresh,  
-                                    events: event
-                                        .where((element) =>
-                                            element.start.toString() ==
-                                            events.first.event)
-                                        .toList(),
-                                    getColor: getColor,
-                                    date: date.toString()),
+                        },
+            
+                        cellAspectRatio: 0.8,
+                        borderSize: 0.5,
+                        onPageChange: (date, pageIndex) =>
+                            print("$date, $pageIndex"),
+                        onCellTap: (events, date) {
+                          if (events.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('No appointment on this date'),
                               ),
                             );
-                          },
-                        );
-
-                        // showBottomSheet(
-                        //   context: context,
-                        //   builder: (context) {
-                        //     return Container(
-                        //       height: screenHeight * 0.4,
-                        //       color: Colors.white,
-                        //       child: Column(
-                        //         children: [
-                        //           const SizedBox(height: 10),
-                        //           const Text('CUSTOMER IMRAN',
-                        //               style: TextStyle(
-                        //                   fontSize: 14,
-                        //                   fontWeight: FontWeight.bold)),
-                        //           const SizedBox(height: 10),
-                        //           const Row(
-                        //             children: [
-                        //               SizedBox(width: 10),
-                        //               Text('14 Years',
-                        //                   style: TextStyle(
-                        //                       fontSize: 14,
-                        //                       fontWeight: FontWeight.bold,
-                        //                       color: Colors.grey)),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(height: 10),
-                        //           const Row(
-                        //             children: [
-                        //               Icon(
-                        //                 Icons.phone,
-                        //               ),
-                        //               SizedBox(width: 10),
-                        //               Text('071 123 4567',
-                        //                   style: TextStyle(
-                        //                     fontSize: 14,
-                        //                     fontWeight: FontWeight.bold,
-                        //                   )),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(height: 10),
-                        //           const Row(
-                        //             children: [
-                        //               Icon(
-                        //                 Icons.calendar_today,
-                        //               ),
-                        //               SizedBox(width: 10),
-                        //               Text('14:00 - 15:00',
-                        //                   style: TextStyle(
-                        //                     fontSize: 14,
-                        //                     fontWeight: FontWeight.bold,
-                        //                   )),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(width: 10),
-                        //           const Divider(),
-                        //           const Row(
-                        //             children: [
-                        //               SizedBox(width: 10),
-                        //               Text('Docter:',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold)),
-                        //               SizedBox(width: 10),
-                        //               Text('Dr. John Doe',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold,
-                        //                       color: Colors.grey)),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(width: 10),
-                        //           const Row(
-                        //             children: [
-                        //               SizedBox(width: 10),
-                        //               Text('Branch:',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold)),
-                        //               SizedBox(width: 10),
-                        //               Text('Tamilnadu',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold,
-                        //                       color: Colors.grey)),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(width: 10),
-                        //           const Row(
-                        //             children: [
-                        //               SizedBox(width: 10),
-                        //               Text('Service:',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold)),
-                        //               SizedBox(width: 10),
-                        //               Text('Root canal',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold,
-                        //                       color: Colors.grey)),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(width: 10),
-                        //           const Row(
-                        //             children: [
-                        //               SizedBox(width: 10),
-                        //               Text('Duration:',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold)),
-                        //               SizedBox(width: 10),
-                        //               Text('0:00',
-                        //                   style: TextStyle(
-                        //                       fontWeight: FontWeight.bold,
-                        //                       color: Colors.grey)),
-                        //             ],
-                        //           ),
-                        //           const SizedBox(width: 10),
-                        //           const Divider(),
-                        //           Row(children: [
-                        //             const SizedBox(width: 10),
-                        //             ElevatedButton(
-                        //                 onPressed: () {},
-                        //                 child: const Text('Collect Payment'))
-                        //           ])
-                        //         ],
-                        //       ),
-                        //     );
-                        //   },
-                        // );
-                      },
-                      startDay: WeekDays
-                          .sunday, // To change the first day of the week.
-                      // This callback will only work if cellBuilder is null.
-                      onEventTap: (event, date) => {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text(event.title),
-                              // content: Text(event.event),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text("Close"),
+                            return;
+                          }
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (BuildContext context) {
+                              return Container(
+                                height: MediaQuery.of(context).size.height *
+                                    0.8, // Adjust height as needed
+                                color: const Color.fromRGBO(255, 255, 255, 1),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: EventView(
+                                      refresh: refresh,  
+                                      events: event
+                                          .where((element) =>
+                                              element.start.toString() ==
+                                              events.first.event)
+                                          .toList(),
+                                      getColor: getColor,
+                                      date: date.toString()),
                                 ),
-                              ],
-                            );
-                          },
-                        ),
-                      },
-                      onDateLongPress: (date) => {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: const Text("Long Press"),
-                              content: Text(date.toString()),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text("Close"),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      },
-                      //headerBuilder: MonthHeader.hidden // To hide month header
+                              );
+                            },
+                          );
+            
+                          // showBottomSheet(
+                          //   context: context,
+                          //   builder: (context) {
+                          //     return Container(
+                          //       height: screenHeight * 0.4,
+                          //       color: Colors.white,
+                          //       child: Column(
+                          //         children: [
+                          //           const SizedBox(height: 10),
+                          //           const Text('CUSTOMER IMRAN',
+                          //               style: TextStyle(
+                          //                   fontSize: 14,
+                          //                   fontWeight: FontWeight.bold)),
+                          //           const SizedBox(height: 10),
+                          //           const Row(
+                          //             children: [
+                          //               SizedBox(width: 10),
+                          //               Text('14 Years',
+                          //                   style: TextStyle(
+                          //                       fontSize: 14,
+                          //                       fontWeight: FontWeight.bold,
+                          //                       color: Colors.grey)),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(height: 10),
+                          //           const Row(
+                          //             children: [
+                          //               Icon(
+                          //                 Icons.phone,
+                          //               ),
+                          //               SizedBox(width: 10),
+                          //               Text('071 123 4567',
+                          //                   style: TextStyle(
+                          //                     fontSize: 14,
+                          //                     fontWeight: FontWeight.bold,
+                          //                   )),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(height: 10),
+                          //           const Row(
+                          //             children: [
+                          //               Icon(
+                          //                 Icons.calendar_today,
+                          //               ),
+                          //               SizedBox(width: 10),
+                          //               Text('14:00 - 15:00',
+                          //                   style: TextStyle(
+                          //                     fontSize: 14,
+                          //                     fontWeight: FontWeight.bold,
+                          //                   )),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(width: 10),
+                          //           const Divider(),
+                          //           const Row(
+                          //             children: [
+                          //               SizedBox(width: 10),
+                          //               Text('Docter:',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold)),
+                          //               SizedBox(width: 10),
+                          //               Text('Dr. John Doe',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold,
+                          //                       color: Colors.grey)),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(width: 10),
+                          //           const Row(
+                          //             children: [
+                          //               SizedBox(width: 10),
+                          //               Text('Branch:',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold)),
+                          //               SizedBox(width: 10),
+                          //               Text('Tamilnadu',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold,
+                          //                       color: Colors.grey)),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(width: 10),
+                          //           const Row(
+                          //             children: [
+                          //               SizedBox(width: 10),
+                          //               Text('Service:',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold)),
+                          //               SizedBox(width: 10),
+                          //               Text('Root canal',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold,
+                          //                       color: Colors.grey)),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(width: 10),
+                          //           const Row(
+                          //             children: [
+                          //               SizedBox(width: 10),
+                          //               Text('Duration:',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold)),
+                          //               SizedBox(width: 10),
+                          //               Text('0:00',
+                          //                   style: TextStyle(
+                          //                       fontWeight: FontWeight.bold,
+                          //                       color: Colors.grey)),
+                          //             ],
+                          //           ),
+                          //           const SizedBox(width: 10),
+                          //           const Divider(),
+                          //           Row(children: [
+                          //             const SizedBox(width: 10),
+                          //             ElevatedButton(
+                          //                 onPressed: () {},
+                          //                 child: const Text('Collect Payment'))
+                          //           ])
+                          //         ],
+                          //       ),
+                          //     );
+                          //   },
+                          // );
+                        },
+                        startDay: WeekDays
+                            .sunday, // To change the first day of the week.
+                        // This callback will only work if cellBuilder is null.
+                        onEventTap: (event, date) => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(event.title),
+                                // content: Text(event.event),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("Close"),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        },
+                        onDateLongPress: (date) => {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text("Long Press"),
+                                content: Text(date.toString()),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("Close"),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        },
+                        //headerBuilder: MonthHeader.hidden // To hide month header
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }),

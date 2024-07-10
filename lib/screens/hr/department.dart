@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
 import 'package:erp_mobile/models/hr/department_model.dart';
+import 'package:erp_mobile/screens/common/delete-dialog.dart';
 import 'package:erp_mobile/screens/common/x_bage.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -25,6 +26,18 @@ class _DepartmentState extends State<Department> {
   List<Data>? data;
   List<Data>? dataTemp;
   bool loading = false;
+  
+  loadData() {
+    final departments = context.read<HrCubit>().getDepartments();
+    loading = true;
+    departments.then((value) {
+      setState(() { 
+        data = value.data;
+        dataTemp = value.data;
+        loading = false;
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -54,7 +67,9 @@ class _DepartmentState extends State<Department> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/department/update_or_create');
+              context.push('/department/update_or_create', extra: {
+                'onSaved' : initState 
+              }); 
             },
           )
         ],
@@ -66,8 +81,9 @@ class _DepartmentState extends State<Department> {
 
         if (state is LoadedHrState) {
           log('Loaded');
-        }
-
+          loadData;   
+        } 
+ 
         if (state is LoadingHrState) {
           log('Loading');
         }
@@ -93,6 +109,7 @@ class _DepartmentState extends State<Department> {
                           itemCount: 10,
                           itemBuilder: (context, index) {
                             return XList(
+                              onDelete: () {}, 
                               onTap: () {},
                               title: '',
                               subtitle: '',
@@ -114,7 +131,7 @@ class _DepartmentState extends State<Department> {
                                   .toLowerCase()
                                   .contains(value.toLowerCase()))
                               .toList();
-                          setState(() {});
+                          setState(() {}); 
                           if (value.isEmpty) {
                             data = dataTemp;
                             setState(() {});
@@ -138,6 +155,15 @@ class _DepartmentState extends State<Department> {
                               title: data?[index].name ?? '',
                               subtitle: data?[index].description ?? '',
                               status: data?[index].status ?? 0,
+                              onDelete: () {
+                                deleteDialog(context, () {
+                                  context.read<HrCubit>().postRes(
+                                    'hr/delete-department',
+                                    {'id': data?[index].id},
+                                    context,
+                                  );
+                                });
+                              },
                               onTap: () {
                                 context.pushReplacement(
                                     '/department/update_or_create',
@@ -164,6 +190,7 @@ class XList extends StatelessWidget {
   String title;
   int status;
   VoidCallback onTap;
+  VoidCallback? onDelete;
 
   XList({
     super.key,
@@ -171,6 +198,7 @@ class XList extends StatelessWidget {
     required this.title,
     required this.status,
     required this.onTap,
+    this.onDelete,
   });
 
   @override
@@ -230,13 +258,20 @@ class XList extends StatelessWidget {
                         const SizedBox(
                           width: 4,
                         ),
-                        XBadge(
-                          icon: const Icon(
-                            CupertinoIcons.delete_solid,
-                            size: 15,
+                        InkWell(
+                          onTap: () {
+                            if (onDelete != null) {
+                              onDelete!();
+                            } 
+                          },
+                          child: XBadge(
+                            icon: const Icon(
+                              CupertinoIcons.delete_solid,
+                              size: 15,
+                            ),
+                            color: Colors.pink,
+                            padding: 4,
                           ),
-                          color: Colors.pink,
-                          padding: 4,
                         ),
                       ],
                     ),

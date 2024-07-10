@@ -30,6 +30,7 @@ class _ProjectsState extends State<Projects> {
   bool loading = false;
   List<Errors>? errorBags = [];
   List<Data>? data = [];
+  String progress = '0';
 
   int limit = 10;
   late ScrollController controller;
@@ -41,14 +42,24 @@ class _ProjectsState extends State<Projects> {
       loadData();
     }
   }
+  
+  isNumber(String value) {
+    if (value.isEmpty) {
+      return false;
+    }
+    final n = num.tryParse(value);
+    return n == null ? false : true;
+  }
 
   loadData({query}) async {
     isLoad = true;
     setState(() {});
     MainCubit cubit = BlocProvider.of<MainCubit>(context);
-    data = await cubit.getProjects(query: query).then((value) {
+    data = await cubit.getProjects(query: {
+      'search' : query,  
+    }).then((value) {
       return value.data;
-    });
+    }); 
     isLoad = false;
     setState(() {});
   }
@@ -112,6 +123,59 @@ class _ProjectsState extends State<Projects> {
                     itemBuilder: (context, index) {
                       return XCard(
                         child: ListTile(
+                          trailing: InkWell(
+                              onTap: () {
+                               
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Update Progress'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          XInput(
+                                            keyboardType: TextInputType.number,  
+                                            label: 'Progress',
+                                            onChanged: (value) {
+                                              progress = value;
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            context
+                                                .read<MainCubit>()
+                                                .postRes(
+                                                    'production/project/${data?[index].id}/update-progress',
+                                                    {
+                                                      'progress': progress,
+                                                    },
+                                                    context)
+                                                .then((value) async {
+                                                   if (value.status == 'success') {
+                                                    await loadData(); 
+                                                    Navigator.of(context).pop();
+                                                   } 
+                                            }); 
+                                            // update progress
+                                          },
+                                          child: const Text('Update'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Icon(Icons.menu)),
                           leading: CircleAvatar(
                             // backgroundColor: ,
                             child: Text(data?[index].name?[0] ?? ''),
@@ -157,9 +221,9 @@ class _ProjectsState extends State<Projects> {
                                 ),
                                 child: FractionallySizedBox(
                                   alignment: Alignment.centerLeft,
-                                  widthFactor: double.parse(
+                                  widthFactor:  isNumber(data?[index].progress ?? '0') ? double.parse(
                                           data?[index].progress ?? '0') /
-                                      100,
+                                      100 : 0, 
                                   child: Container(
                                     decoration: BoxDecoration(
                                       color: Colors.blue,
@@ -180,9 +244,9 @@ class _ProjectsState extends State<Projects> {
                                   const Icon(Icons.calendar_today, size: 16),
                                   const SizedBox(width: 5),
                                   Text('Start Date : '.toUpperCase(),
-                                      style: const TextStyle(fontSize: 10)),
+                                      style: const TextStyle(fontSize: 8)),
                                   Text(data?[index].startDate ?? '',
-                                      style: const TextStyle(fontSize: 10)),
+                                      style: const TextStyle(fontSize: 8)),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -191,9 +255,9 @@ class _ProjectsState extends State<Projects> {
                                   const Icon(Icons.calendar_today, size: 16),
                                   const SizedBox(width: 5),
                                   Text('End Date : '.toUpperCase(),
-                                      style: const TextStyle(fontSize: 10)),
+                                      style: const TextStyle(fontSize: 8)),
                                   Text(data?[index].deadline ?? '',
-                                      style: const TextStyle(fontSize: 10)),
+                                      style: const TextStyle(fontSize: 8)),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -209,28 +273,25 @@ class _ProjectsState extends State<Projects> {
                               ),
                               const SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment: 
+                                mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,  
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   XButtons(
                                     name: 'Chat',
                                     icon: Icons.chat,
                                     onPressed: () {
-                                      context.pushNamed( 
-                                          'project.chat',
-                                          extra: {
-                                            'id':  data?[index].id.toString() ?? '',
-                                            'name': data?[index].name ?? '',
-                                          });
+                                      context.pushNamed('project.chat', extra: {
+                                        'id': data?[index].id.toString() ?? '',
+                                        'name': data?[index].name ?? '',
+                                      });
                                     },
                                   ),
                                   XButtons(
                                     name: 'Process',
                                     icon: Icons.settings,
                                     onPressed: () {
-                                      context.pushNamed(
-                                          'project.proccess', 
+                                      context.pushNamed('project.proccess',
                                           extra: {
                                             'id':
                                                 data?[index].id.toString() ?? ''
@@ -239,13 +300,13 @@ class _ProjectsState extends State<Projects> {
                                   ),
                                 ],
                               ),
-                              
-                              const SizedBox(height: 10),  
-                              
+
+                              const SizedBox(height: 10),
+
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start, 
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // XButtons(
                                   //   name: 'Progress',
@@ -271,26 +332,20 @@ class _ProjectsState extends State<Projects> {
                                           });
                                     },
                                   ),
-                                  
+
                                   XButtons(
                                     name: 'Work Update',
                                     icon: Icons.update,
                                     onPressed: () {
-                                      context.pushNamed(
-                                          'project.work',
-                                          extra: { 
-                                            'id':
-                                                data?[index].id.toString() ?? ''
-                                          });
+                                      context.pushNamed('project.work', extra: {
+                                        'id': data?[index].id.toString() ?? ''
+                                      });
                                     },
                                   ),
-                                  
                                 ],
                               ),
-                              
-                              // const SizedBox(height: 10), 
-                              
-                              
+
+                              // const SizedBox(height: 10),
                             ],
                           ),
                           onTap: () {

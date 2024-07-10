@@ -62,9 +62,8 @@ class _QaState extends State<Qa> {
 
   String projectId = '';
 
-  loadData({query}) {
+  loadData({query}) async {
     isLoad = true;
-
     setState(() {});
     final d =
         context.read<MainCubit>().get('production/qa', limit: limit, query: {
@@ -312,6 +311,7 @@ class _FormState extends State<Form> {
                 hintText: 'Enter  Start Date',
                 onChanged: (v) {
                   widget.form['start_date'] = v;
+                  setState(() {});
                 },
               ),
               XInput(
@@ -321,6 +321,7 @@ class _FormState extends State<Form> {
                 hintText: 'Enter  End Date',
                 onChanged: (v) {
                   widget.form['end_date'] = v;
+                  setState(() {});  
                 },
               ),
             ],

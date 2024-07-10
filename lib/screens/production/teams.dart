@@ -67,10 +67,10 @@ class _TeamsState extends State<Teams> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Teams'),
-        actions: [
+        actions: [ 
           IconButton(
             onPressed: () {
-              context.pushNamed('project.team_create_or_edit');
+              context.pushNamed('project.team_create_or_edit', extra: {'onSaved': loadData});
             },
             icon: const Icon(Icons.add),
           ),

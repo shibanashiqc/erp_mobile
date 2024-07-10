@@ -17,7 +17,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Customers extends StatefulWidget {
-  const Customers({super.key});
+  Object? extra;
+  Customers({super.key, this.extra});
 
   @override
   State<Customers> createState() => _CustomersState();
@@ -26,23 +27,27 @@ class Customers extends StatefulWidget {
 class _CustomersState extends State<Customers> {
   bool loading = false;
   DateTime focusedDay = DateTime.now();
-  List<Data> data = [];   
-  
-  void loadData({query}) async { 
+  List<Data> data = [];
+  Map<dynamic, dynamic> extra = {};
+
+  void loadData({query}) async {
     loading = true;
     await context.read<HrCubit>().getCustomers(query: {
       'name': query,
     }).then((value) {
       setState(() {
-        data = value.data!; 
+        data = value.data!;
         loading = false;
       });
     });
   }
-  
+
   @override
   void initState() {
-    super.initState(); 
+    super.initState();
+    if (widget.extra != null) {
+      extra = widget.extra as Map<dynamic, dynamic>;
+    }
     loadData();
   }
 
@@ -55,13 +60,15 @@ class _CustomersState extends State<Customers> {
   Scaffold buildScaffold(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customers'),
+        title: Text(extra['type'] ?? 'Customers'),
         actions: [
-          IconButton( 
+          IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/sales/create_customers',); 
-            }, 
+              context.push(
+                '/sales/create_customers',
+              );
+            },
           )
         ],
       ),
@@ -90,7 +97,7 @@ class _CustomersState extends State<Customers> {
                             Icons.search,
                             color: ColorConstants.secondaryColor,
                           ),
-                          hintText: 'Search by name',
+                          hintText: 'Search by name or phone',
                         ),
                         ListView.separated(
                           shrinkWrap: true,
@@ -115,7 +122,7 @@ class _CustomersState extends State<Customers> {
                     children: [
                       XInput(
                         onChanged: (value) {
-                          loadData(query: value);  
+                          loadData(query: value);
                         },
                         suffixIcon: const Icon(
                           Icons.search,
@@ -123,30 +130,29 @@ class _CustomersState extends State<Customers> {
                         ),
                         hintText: 'Search by name',
                       ),
-                   
                       ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(), 
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 10),
-                        itemCount: data.length, 
+                        itemCount: data.length,
                         itemBuilder: (context, index) {
-                          return InkWell( 
+                          return InkWell(
                             onTap: () {
-                              context.pushNamed('customer.detail', extra: {
-                                'id': data[index].id, 
-                                'name' : data[index].name,    
-                                'extra': data[index]  
-                              }); 
+                              if (widget.extra != null) { 
+                                context.pushNamed('customer.detail', extra: {
+                                  'id': data[index].id,
+                                  'name': data[index].name,
+                                  'extra': data[index]
+                                });
+                              } 
                             },
                             child: BuildCustomerList(
-                              data: data[index],  
+                              data: data[index],
                             ),
                           );
                         },
-                      ), 
-                      
-                      
+                      ),
                     ],
                   ));
       }),
@@ -155,27 +161,23 @@ class _CustomersState extends State<Customers> {
 }
 
 class BuildCustomerList extends StatelessWidget {
-   Data data;
-   BuildCustomerList({
+  Data data;
+  BuildCustomerList({
     super.key,
-    required this.data, 
+    required this.data,
   });
 
   @override
   Widget build(BuildContext context) {
-    return XCard( 
+    return XCard(
       child: Column(
         children: [
-          Items(
-            items: [
-              ItemListModel(name: 'NAME', value: data.name ?? ''),
-              ItemListModel(name: 'EMAIL', value:  data.email ?? ''),
-              ItemListModel(name: 'PHONE', value: data.phone ?? ''),
-              ItemListModel(name: 'CREATED AT', value: data.createdAt ?? ''), 
-            ]
-          ),  
-          
-           
+          Items(items: [
+            ItemListModel(name: 'NAME', value: data.name ?? ''),
+            ItemListModel(name: 'EMAIL', value: data.email ?? ''),
+            ItemListModel(name: 'PHONE', value: data.phone ?? ''),
+            ItemListModel(name: 'CREATED AT', value: data.createdAt ?? ''),
+          ]),
           Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -183,27 +185,23 @@ class BuildCustomerList extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('ACTION', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)) ,
-                    
-                    Row(
-                      children: [
-                        InkWell(  
-                          onTap: () {
-                            context.push('/sales/create_customers', extra: {
-                              'id': data.id,    
-                              'extra': data  
-                            }); 
-                          },
-                          child: const Icon(Icons.edit),
-                        ),
-                      ]
-                    ),
-                    
+                    const Text('ACTION',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 12)),
+                    Row(children: [
+                      InkWell(
+                        onTap: () {
+                          context.push('/sales/create_customers',
+                              extra: {'id': data.id, 'extra': data});
+                        },
+                        child: const Icon(Icons.edit),
+                      ),
+                    ]),
                   ],
                 ),
-                
-               const SizedBox(height: 10), 
-                
+
+                const SizedBox(height: 10),
+
                 // Row(
                 //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 //   children: [
@@ -213,15 +211,12 @@ class BuildCustomerList extends StatelessWidget {
                 //         context.push('/sales/view_invoice');
                 //       },
                 //       child: const Icon(CupertinoIcons.eye),
-                //     ), 
+                //     ),
                 //   ],
-                // ), 
-                
+                // ),
               ],
             ),
-          ),  
-          
-          
+          ),
         ],
       ),
     );
@@ -229,8 +224,8 @@ class BuildCustomerList extends StatelessWidget {
 }
 
 class Items extends StatelessWidget {
-   List<ItemListModel> items = [];
-   Items({
+  List<ItemListModel> items = [];
+  Items({
     required this.items,
     super.key,
   });
@@ -239,29 +234,31 @@ class Items extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
-      child:  Column(
-       crossAxisAlignment: CrossAxisAlignment.start,
-       mainAxisAlignment: MainAxisAlignment.start, 
-        children: items.map((e) => Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('${e.name} : ', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)) ,
-                Text(e.value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-              ],
-            ),
-            
-            const SizedBox(height: 5), 
-            
-          ],
-        )).toList(),
-        
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: items
+            .map((e) => Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('${e.name} : ',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12)),
+                        Text(e.value,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 12)),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                  ],
+                ))
+            .toList(),
       ),
     );
   }
 }
-
 
 class ItemListModel {
   final String name;

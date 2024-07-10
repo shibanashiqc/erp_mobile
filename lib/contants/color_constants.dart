@@ -9,4 +9,5 @@ class ColorConstants {
    static const greshadowColoren = Colors.green;
    static const pinkColor = Colors.pink;  
    static const purpleColor = Colors.purple;
+   static const timelineColor = Color(0xff01b1d6);
 }

@@ -10,6 +10,7 @@ import 'package:erp_mobile/cubit/hr/staff/staff_cubit.dart';
 import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/pos/products_model.dart' as pos;
 import 'package:erp_mobile/screens/auth/login_screen.dart';
+import 'package:erp_mobile/screens/hr/staff/staff_list.dart';
 import 'package:erp_mobile/screens/pos/cart.dart';
 import 'package:erp_mobile/screens/dashboard.dart';
 import 'package:erp_mobile/screens/hr/staff/attendance.dart';
@@ -129,9 +130,15 @@ final router = GoRouter(
               builder: (_, state) {
                 if (state.extra == null) return TeamCreateOrEdit();
                 Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+                
+                // if(extra['onSaved'] != null) {
+                //   return TeamCreateOrEdit(
+                //     onSaved: extra['onSaved'] as Function(),
+                //   );
+                // }  
                 return TeamCreateOrEdit(
                   editId: extra['id'].toString(),
-                  data: extra['extra'],
+                  data: extra['extra'] ?? {},
                   onSaved: extra['onSaved'] != null 
                       ? extra['onSaved'] as Function()
                       : () => {},
@@ -151,9 +158,14 @@ final router = GoRouter(
                 if (state.extra == null) return ClientCreateOrEdit();
                 Map<String, dynamic> extra =
                     state.extra as Map<String, dynamic>;
-                return ClientCreateOrEdit(
+                // if (extra['onSaved'] != null) {
+                //   return ClientCreateOrEdit(
+                //     onSaved: extra['onSaved'] as Function(),
+                //   );
+                // }    
+                return ClientCreateOrEdit( 
                   editId: extra['id'].toString(),
-                  data: extra['extra'],  
+                  data: extra['extra'] ?? {},   
                   onSaved: extra['onSaved'] != null 
                       ? extra['onSaved'] as Function()
                       : () => {},
@@ -260,13 +272,15 @@ final router = GoRouter(
               path: 'update_or_create',
               builder: (context, state) {
                 if (state.extra == null) return DepartmentForm();
-                final extra = json.encode(state.extra);
-                final params = Params.fromJson(json.decode(extra));
+                Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
                 return DepartmentForm(
-                  editId: params.id,
-                  title: params.title,
-                  description: params.description,
-                  status: params.status,
+                  editId: extra['id'],
+                  title: extra['title'],
+                  description: extra['description'],
+                  status: extra['status'],
+                  onSaved: extra['onSaved'] != null
+                      ? extra['onSaved'] as Function()
+                      : () => {}, 
                 );
               },
             ),
@@ -368,10 +382,21 @@ final router = GoRouter(
             ),
           ],
         ),
+        
+        
+        
+        
         GoRoute(
           path: 'staff',
           builder: (_, state) => const Role(),
           routes: [
+            
+          GoRoute(
+          name: 'staff.list',
+          path: 'list',
+          builder: (_, state) => const StaffList(),
+          ), 
+            
             GoRoute(
               path: 'update_or_create',
               builder: (context, state) {
@@ -429,7 +454,9 @@ final router = GoRouter(
 
             GoRoute(
               path: 'customers',
-              builder: (context, state) => const Customers(),
+              builder: (context, state) =>  Customers(
+                extra: state.extra, 
+              ),
             ),
             
             GoRoute(

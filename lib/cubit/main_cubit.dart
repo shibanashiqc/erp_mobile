@@ -232,11 +232,11 @@ class MainCubit extends Cubit<MainState> {
   }
 
 
-  Future<ResponseModel> postRes(endpoint, Map<String, dynamic> data, BuildContext context) async {
+  Future<ResponseModel> postRes(endpoint, Map<String, dynamic> data, BuildContext context, {multipart = false}) async {
     try {
       emit(const LoadingMainState());
       log(data.toString());
-      var res = await _repository.post(data, endpoint);
+      var res = await _repository.post(data, endpoint, multipart: multipart);
       if (res.status == 'error') {
         validateError(res.errors!);
       } 
@@ -284,14 +284,15 @@ class MainCubit extends Cubit<MainState> {
   }
   
   
-  Future<ResponseModel> createOrUpdateProject(Map<String, dynamic> data) async {
+  Future<ResponseModel> createOrUpdateProject(Map<String, dynamic> data, BuildContext context) async {
     try {
       emit(const LoadingMainState());
-      log(data.toString());
       var res = await _repository.post(data, 'production/update-or-create-project', multipart: true);
-
+      alert(context, res.message ?? '',); 
       if (res.status == 'error') {
         validateError(res.errors!);
+      }else{
+        Navigator.pop(context); 
       }
       emit(LoadedMainState());
       return res;

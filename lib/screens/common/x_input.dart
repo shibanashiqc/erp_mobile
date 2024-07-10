@@ -129,10 +129,11 @@ class _XInputState extends State<XInput> {
                             initialDate: DateTime.now(),
                             firstDate: DateTime(2015, 8),
                             lastDate: DateTime(2101),
-                          );
+                          );  
                           if (picked != null) {
-                            widget.initialValue = picked.toString();
-                            widget.onChanged!(picked.toString());
+                            // remove the time part
+                            widget.initialValue = picked.toString().substring(0, 10);
+                            widget.onChanged!(picked.toString().substring(0, 10)); 
                           }
                         },
                         child: IgnorePointer(

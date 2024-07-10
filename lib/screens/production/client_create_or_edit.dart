@@ -9,7 +9,9 @@ import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/production/production_extra_model.dart';
 import 'package:erp_mobile/models/response_model.dart';
 import 'package:erp_mobile/models/sales/sales_extra_model.dart' as sales;
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/fields.dart';
+import 'package:erp_mobile/screens/common/x_button.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_file_image.dart';
 import 'package:erp_mobile/screens/common/x_form.dart';
@@ -53,6 +55,7 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
     'phone': '',
     'image': '',
     'country_id': '',
+    'customer_id': '',
   };
 
   List<Fields> fileds = [];
@@ -72,24 +75,26 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
       
       final data = getExtraSales.data as sales.Data;
       countries = data.country ?? []; 
-      
-      if (widget.editId.isNotEmpty) {
+         
+    
+      if (widget.editId != 'null') { 
          Map<String, dynamic> mapData = {};
          mapData =  json.decode(json.encode(widget.data));
          formValues = mapData;  
-         formValues['edit_id'] = widget.editId;
+         formValues['edit_id'] = widget.editId; 
       }
       
       customers = data.customers;
       fileds.addAll([
-        
+       
+        if (formValues['edit_id'] == '') 
         Fields(
             placeholder: 'Select Customer',
             model: 'customer_id',
             label: 'Customer',
             type: '',
             xClass: 'XSelect',
-            value: '',
+            value: formValues['customer_id'], 
             onChanged: (){
               formValues['name'] = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).name;
               formValues['email'] = customers?.firstWhere((element) => element.id == int.parse(formValues['customer_id'])).email;
@@ -172,50 +177,64 @@ class _ClientCreateOrEditState extends State<ClientCreateOrEdit> {
       appBar: AppBar(
         title: const Text('Clients Create Or Edit'),
       ),
-      bottomNavigationBar: Container( 
-        height: 50,
-        color: ColorConstants.primaryColor,
-        child: TextButton(
-          onPressed: () async {
-            await context
-                .read<MainCubit>()
-                .save(formValues, 'production/update-or-create-client')
-                .then((value) => {
-                      if (value.errors != null)
-                        {errorBags = value.errors, setState(() {})}
-                      else
-                        {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Data Saved Successfully'),
-                            ),
-                          ),
-                          if (widget.onSaved != null) {widget.onSaved!()},  
-                          setState(() {}),
-                          if (formValues['edit_id'] == null)
-                            {
-                              context.pushReplacementNamed(
-                                  'project.client_create_or_edit'),
-                            },
-                        }
-                    });
-          },
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.save,
-                color: Colors.white,
-              ),
-              Text(
-                'SAVE',
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
+      bottomNavigationBar: XButton(
+        label: 'Save',
+        onPressed: () async { 
+          await context
+              .read<MainCubit>()
+              .save(formValues, 'production/update-or-create-client')
+              .then((value) => {
+                    alert(context, value.message ?? ''), 
+                    if (value.errors != null)
+                      {errorBags = value.errors, setState(() {})}
+                    else
+                      { 
+                        if (widget.onSaved != null) { widget.onSaved!()},  
+                        Navigator.of(context).pop()
+                      } 
+                  });
+        },
       ),
-      body: BlocConsumer<MainCubit, MainState>(listener: (context, state) {
+      // bottomNavigationBar: InkWell(
+      //   onTap: () async{
+      //      await context
+      //             .read<MainCubit>()
+      //             .save(formValues, 'production/update-or-create-client')
+      //             .then((value) => {
+      //                   if (value.errors != null)
+      //                     {errorBags = value.errors, setState(() {})}
+      //                   else
+      //                     {
+      //                       alert(context, value.message ?? ''), 
+      //                       if (widget.onSaved != null) {widget.onSaved!()},  
+      //                       Navigator.of(context).pop()
+      //                     } 
+      //                 }); 
+      //   },
+      //   child: Container(  
+      //     height: 50, 
+      //     color: const Color.fromRGBO(255, 140, 33, 1),
+      //     child: TextButton(
+      //       onPressed: () async {
+             
+      //       },
+      //       child: const Row(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         children: [
+      //           Icon(
+      //             Icons.save,
+      //             color: Colors.white,
+      //           ),
+      //           Text(
+      //             'SAVE',
+      //             style: TextStyle(color: Colors.white),
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
+       body: BlocConsumer<MainCubit, MainState>(listener: (context, state) {
         if (state is ErrorMainState) {
           log('Error: ${state.message}');
         }
