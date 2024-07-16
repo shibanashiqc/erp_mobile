@@ -242,7 +242,8 @@ class ApiClient {
         data: formData,
         options: Options(headers: headers),
       );
-
+      
+      log(response.toString()); 
       if (kDebugMode) {
         print(response);
       }

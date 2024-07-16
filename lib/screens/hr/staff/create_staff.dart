@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:erp_mobile/cubit/hr/staff/staff_cubit.dart';
 import 'package:erp_mobile/models/hr/hr_extra_data_model.dart';
 import 'package:erp_mobile/models/response_model.dart';
@@ -60,6 +61,7 @@ class _CreateStaffState extends State<CreateStaff> {
   String accountName = '';
   String accountNumber = '';
   String ifscCode = '';
+  String speciality = '';
 
   String dateOfJoining = '';
   String basicSalary = '';
@@ -73,6 +75,7 @@ class _CreateStaffState extends State<CreateStaff> {
   String educationAllowance = '';
   String medicalReimbursement = '';
   String specialAllowance = '';
+  String license = '';
 
   List<Errors> errorBags = [];
 
@@ -127,7 +130,7 @@ class _CreateStaffState extends State<CreateStaff> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: XButton(
         label: 'Save',
-        onPressed: () {
+        onPressed: () async {
           context.read<StaffCubit>().createStaff({
             'role_id': roleId,
             'name': name,
@@ -141,37 +144,45 @@ class _CreateStaffState extends State<CreateStaff> {
             'current_address': currentAddress,
             'permanent_address': permanentAddress,
             'opening_balance': openingBalance,
-            'image': image,
+            'image': image.path != '' ? await MultipartFile.fromFile(image.path) : null,
             'applicable_for_leave': applicableForLeave,
-            'signature': signature,
+            'signature': signature.path != '' ? await MultipartFile.fromFile(signature.path) : null, 
+            'documents': documents.map((e) => MultipartFile.fromFile(e.path)).toList(), 
             'mid_name': midName,
             'last_name': lastName,
             'father_name': fatherName,
-            'mother_name': motherName,
+            'mother_name': motherName, 
             'spouse_name': spouseName,
             'pan_number': panNumber,
             'aadhar_number': aadharNumber,
             'alt_phone': altPhone,
             'leave_limit': leaveLimit,
             'bank_name': bankName,
-            'bank_branch': bankBranch,
+            'branch_name': bankBranch, 
             'account_name': accountName,
             'account_number': accountNumber,
             'ifsc_code': ifscCode,
             'date_of_joining': dateOfJoining,
             'basic_salary': basicSalary,
-            'employee_type_id': employeeTypeId,
+            'emplpyee_type_id': employeeTypeId,
             'designation_id': designationId,
             'grade': grade,
             'capabilities': capabilities,
             'experience': experience,
+            'license' : license,
             'hra': hra,
             'conveyance': conveyance,
             'education_allowance': educationAllowance,
             'medical_reimbursement': medicalReimbursement,
             'special_allowance': specialAllowance,
+            'speciality': speciality,
             
-            
+          }, 
+          context
+          ).then((value) {
+            if (value.errors == null) {
+              Navigator.pop(context);  
+            }
           });
         },
       ),
@@ -326,6 +337,29 @@ class _CreateStaffState extends State<CreateStaff> {
           label: 'Grade',
           hintText: 'Enter grade',
         ),
+        
+         XInput(
+          model: 'speciality',
+          errorBags: errorBags,
+          initialValue: capabilities,
+          onChanged: (value) {
+            speciality = value;
+          },
+          label: 'Speciality',
+          hintText: 'Enter speciality',
+        ),
+        
+        XInput(
+          model: 'license',
+          errorBags: errorBags,
+          initialValue: capabilities,
+          onChanged: (value) { 
+            license = value;
+          },
+          label: 'License',
+          hintText: 'Enter license',
+        ),  
+        
         XInput(
           model: 'capabilities',
           errorBags: errorBags,

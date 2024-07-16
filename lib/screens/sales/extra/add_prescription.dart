@@ -15,9 +15,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddPrescription extends StatefulWidget {
   String customerId;
+  Function()? onSaved;
   AddPrescription({
     super.key,
     required this.customerId,
+    this.onSaved,
   });
 
   @override
@@ -116,6 +118,7 @@ class _AddPrescriptionState extends State<AddPrescription> {
 
               if (response.errors == null) { 
                 items = [];
+                if (widget.onSaved != null) widget.onSaved!();
                 Navigator.pop(context);
               }
             },

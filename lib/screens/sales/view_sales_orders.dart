@@ -3,25 +3,21 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import "package:collection/collection.dart";
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/sales/sales_orders_model.dart';
-import 'package:erp_mobile/screens/common/x_bage.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class ViewSalesOrders extends StatefulWidget {
   dynamic salesOrder;
-  ViewSalesOrders({super.key, this.salesOrder});
+  Function()? onSaved;
+  ViewSalesOrders({super.key, this.salesOrder, this.onSaved});
 
   @override
   State<ViewSalesOrders> createState() => _ViewSalesOrdersState();
@@ -30,20 +26,16 @@ class ViewSalesOrders extends StatefulWidget {
 class _ViewSalesOrdersState extends State<ViewSalesOrders> {
   bool loading = false;
   DateTime focusedDay = DateTime.now();
-  List<SalesOrderItems>? items = []; 
-  Data data = Data(); 
+  List<SalesOrderItems>? items = [];
+  Data data = Data();
 
   @override
   void initState() {
     super.initState();
-    if (widget.salesOrder != null) {   
-      data = Data.fromJson(widget.salesOrder);
-      // group by sales person id
-      items = data.salesOrderItems; 
-      // ?.groupListsBy((element) => element.salesPersonId);
-       
-    } 
-    // check it is list or not
+    if (widget.salesOrder != null) {
+      data = Data.fromJson(json.decode(json.encode(widget.salesOrder)));
+      items = data.salesOrderItems;
+    }
   }
 
   @override
@@ -59,11 +51,12 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {  
-              context.push('/sales/create_sales_orders', 
-              extra: widget.salesOrder, 
-              ); 
-            },
+            onPressed: () {
+              context.push(
+                '/sales/create_sales_orders', 
+                extra: {'extra': data.toJson(), 'onSaved': widget.onSaved},    
+              );
+            }, 
           )
         ],
       ),
@@ -73,7 +66,7 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
         }
 
         if (state is LoadedMainState) {
-          log('Loaded'); 
+          log('Loaded');
         }
 
         if (state is LoadingMainState) {
@@ -138,43 +131,64 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 10),
                         itemCount: items!.length,
-                        shrinkWrap: true,  
+                        shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) => XCard(
                           child: Column(
-                            children: [ 
-                              const SizedBox(height: 10), 
-                              Text('DATE : ${items?[index].orderDate}',  
-                                  style: const TextStyle( 
+                            children: [
+                              const SizedBox(height: 10),
+                              Text('DATE : ${items?[index].orderDate}',
+                                  style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                               Items(items: [
-                                ItemListModel(name: 'REFERENCE', value: items?[index].reference ?? ''), 
-                                ItemListModel(name: 'SALES MAN', value: items?[index].salesPerson?.name ?? ''), 
-                                ItemListModel(name: 'NAME', value: data.customer?.name ?? ''), 
-                                ItemListModel(name: 'EMAIL', value: data.email ?? ''), 
-                                ItemListModel(name: 'PHONE', value: data.phone ?? ''), 
-                                ItemListModel(name: 'ID', value: items?[index].id.toString() ?? ''), 
-                                ItemListModel(name: 'DATE & TIME', value: items?[index].createdAt ?? ''),
-                                ItemListModel(name: 'PAYMENT DUE DATE', value: items?[index].dueDate ?? ''), 
-                                ItemListModel(name: 'BALANCE AMOUNT', value: items?[index].balanceAmount ?? '0.0'), 
-                                ItemListModel(name: 'PAID AMOUNT', value: items?[index].paidAmount ?? '0.0'), 
-                                ItemListModel(name: 'TOTAL AMOUNT', value: items?[index].totalPrice ?? '0.0'), 
-                                
-                              ]), 
+                                ItemListModel(
+                                    name: 'REFERENCE',
+                                    value: items?[index].reference ?? ''),
+                                ItemListModel(
+                                    name: 'SALES MAN',
+                                    value:
+                                        items?[index].salesPerson?.name ?? ''),
+                                ItemListModel(
+                                    name: 'NAME',
+                                    value: data.customer?.name ?? ''),
+                                ItemListModel(
+                                    name: 'EMAIL', value: data.email ?? ''),
+                                ItemListModel(
+                                    name: 'PHONE', value: data.phone ?? ''),
+                                ItemListModel(
+                                    name: 'ID',
+                                    value: items?[index].id.toString() ?? ''),
+                                ItemListModel(
+                                    name: 'DATE & TIME',
+                                    value: items?[index].createdAt ?? ''),
+                                ItemListModel(
+                                    name: 'PAYMENT DUE DATE',
+                                    value: items?[index].dueDate ?? ''),
+                                ItemListModel(
+                                    name: 'BALANCE AMOUNT',
+                                    value:
+                                        items?[index].balanceAmount ?? '0.0'),
+                                ItemListModel(
+                                    name: 'PAID AMOUNT',
+                                    value: items?[index].paidAmount ?? '0.0'),
+                                ItemListModel(
+                                    name: 'TOTAL AMOUNT',
+                                    value: items?[index].totalPrice ?? '0.0'),
+                              ]),
                               const SizedBox(height: 10),
-                              Padding( 
+                              Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   children: [
-                                    Text( items?[index].notes ?? ''),
-                                    const SizedBox(height: 10), 
+                                    Text(items?[index].notes ?? ''),
+                                    const SizedBox(height: 10),
                                     const Text('PRODUCT',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 12)),
                                     const SizedBox(height: 10),
-                                    
+
                                     // Container(
                                     //   padding: const EdgeInsets.all(10),
                                     //   decoration: BoxDecoration(
@@ -248,7 +262,7 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
                                     //   ),
                                     // ),
                                     // const SizedBox(height: 10),
-                                    
+
                                     Container(
                                       padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
@@ -266,54 +280,68 @@ class _ViewSalesOrdersState extends State<ViewSalesOrders> {
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 12)),
-                                              Text(items?[index].product?.name ?? '', 
+                                              Text(
+                                                  items?[index].product?.name ??
+                                                      '',
                                                   style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 12)),
                                             ],
                                           ),
-                                           Row(
+                                          Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                             const Text('QUANTITY',
+                                              const Text('QUANTITY',
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 12)),
-                                              Text(items?[index].quantity.toString() ?? '', 
-                                                  style: const TextStyle(
-                                                      fontWeight: 
-                                                          FontWeight.bold)),
-                                            ],
-                                          ),
-                                           Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                             const Text('PRICE',
-                                                  style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 12)),
-                                              Text(items?[index].rate.toString() ?? '', 
+                                              Text(
+                                                  items?[index]
+                                                          .quantity
+                                                          .toString() ??
+                                                      '',
                                                   style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold)),
                                             ],
                                           ),
-                                           Row(
+                                          Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
-                                            const  Text('TOTAL',
+                                              const Text('PRICE',
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize: 12)),
-                                              Text(items?[index].totalPrice.toString() ?? '',
-                                                  style: const TextStyle( 
+                                              Text(
+                                                  items?[index]
+                                                          .rate
+                                                          .toString() ??
+                                                      '',
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text('TOTAL',
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 12)),
+                                              Text(
+                                                  items?[index]
+                                                          .totalPrice
+                                                          .toString() ??
+                                                      '',
+                                                  style: const TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold)),
                                             ],

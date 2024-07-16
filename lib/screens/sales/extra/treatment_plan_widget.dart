@@ -18,8 +18,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TreatmentPlanWidget extends StatefulWidget {
    String customerId;
+   bool isCompleted = false;
+   Function()? onSaved;
    TreatmentPlanWidget({
     required this.customerId,
+    this.onSaved,
+    this.isCompleted = false, 
     super.key,
   });
 
@@ -69,6 +73,7 @@ class _TreatmentPlanWidgetState extends State<TreatmentPlanWidget> {
         discountAmount: '0.0',
         taxValue: 0,
         taxAmount: '0.0',
+        isCompleted: widget.isCompleted ? 1 : 0, 
       ));
     }
 
@@ -331,6 +336,7 @@ class _TreatmentPlanWidgetState extends State<TreatmentPlanWidget> {
                               if (response.errors == null) { 
                                   data = Data();
                                   items = []; 
+                                  if(widget.onSaved != null) widget.onSaved!(); 
                                   Navigator.pop(context); 
                               }
                             },

@@ -5,17 +5,13 @@ import 'dart:developer';
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/sales/sales_orders_model.dart';
-import 'package:erp_mobile/screens/common/x_bage.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class SalesOrder extends StatefulWidget {
   const SalesOrder({super.key});
@@ -77,7 +73,9 @@ class _SalesOrderState extends State<SalesOrder> {
           IconButton( 
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/sales/create_sales_orders');
+              context.push('/sales/create_sales_orders', extra: {
+                'onSaved' : loadData 
+              });
             }, 
           )
         ],
@@ -192,7 +190,7 @@ class _SalesOrderState extends State<SalesOrder> {
                                           children: [
                                             InkWell(  
                                               onTap: () { 
-                                                context.push('/sales/view_sales_orders', extra: {'extra': data[index]});
+                                                context.push('/sales/view_sales_orders', extra: {'extra': data[index],  'onSaved' : loadData });
                                               },
                                               child: const Icon(Icons.remove_red_eye_outlined),
                                             ),

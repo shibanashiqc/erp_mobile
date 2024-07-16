@@ -355,16 +355,16 @@ class _PosState extends State<Pos> {
                       ),
                       
                       products.isEmpty
-                          ? SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.8,
+                          ? SizedBox( 
+                              height: MediaQuery.of(context).size.height * 0.95,
                               child: Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text('No products found'),
+                                    const Text('No products found'), 
                                     const SizedBox(height: 10),
                                     ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () { 
                                         context.push('/product/add_product');
                                       },
                                       child: const Text('Add Products'),
@@ -374,9 +374,10 @@ class _PosState extends State<Pos> {
                               ),
                             )
                           : SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              child: GridView.builder(
-                                padding: const EdgeInsets.all(10),
+                              child: GridView.builder(  
+                                shrinkWrap: true,   
+                                primary: false, 
+                                padding: const EdgeInsets.all(10), 
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
@@ -634,6 +635,8 @@ class _PosState extends State<Pos> {
                                 },
                               ),
                             ),
+                             
+                       const SizedBox(height: 100),
                     ],
                   ));
       }),

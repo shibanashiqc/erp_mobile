@@ -64,7 +64,7 @@ class Items {
   String? createdAt;
   String? updatedAt;
   String? module;
-  Null? notes;
+  String? notes;
 
   Items(
       {this.id,

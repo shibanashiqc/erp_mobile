@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
 import 'package:erp_mobile/models/hr/employee_type_model.dart';
+import 'package:erp_mobile/screens/common/delete-dialog.dart';
 import 'package:erp_mobile/screens/common/x_bage.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -24,6 +25,20 @@ class EmployeeType extends StatefulWidget {
 class _EmployeeTypeState extends State<EmployeeType> {
   List<Data>? data;
   bool loading = false;
+  
+  loadData()
+  {
+    final employeeTypes = context.read<HrCubit>().getEmployeeTypes();
+    loading = true;
+    setState(() { 
+    });
+    employeeTypes.then((value) {
+      setState(() {
+        data = value.data;
+        loading = false;
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -49,10 +64,12 @@ class _EmployeeTypeState extends State<EmployeeType> {
       appBar: AppBar(
         title: const Text('Employee Type'),
         actions: [
-          IconButton(
+          IconButton( 
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/employee_type/update_or_create');
+              context.push('/employee_type/update_or_create', extra: {
+                'onSaved': loadData,
+              });
             },
           )
         ],
@@ -93,6 +110,7 @@ class _EmployeeTypeState extends State<EmployeeType> {
                             itemCount: 10,
                             itemBuilder: (context, index) {
                               return XList(
+                                onDelete: () {},
                                 onTap: () {},
                                 title: '',
                                 subtitle: '',
@@ -115,7 +133,8 @@ class _EmployeeTypeState extends State<EmployeeType> {
                         ),
                         hintText: 'Search by name',
                       ),
-                      Flexible(
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.8, 
                         child: ListView.separated(
                           shrinkWrap: true,
                           separatorBuilder: (context, index) =>
@@ -123,17 +142,32 @@ class _EmployeeTypeState extends State<EmployeeType> {
                           itemCount: data?.length ?? 0,
                           itemBuilder: (context, index) {
                             return XList(
+                              onDelete: () {
+                                 deleteDialog(context, () => 
+                                  {
+                                   context.read<HrCubit>().postRes(
+                                    'hr/delete-employee-type',
+                                    {'id': data?[index].id},
+                                    context,
+                                  ).then((value) => 
+                                    loadData() 
+                                  ) 
+                                  }
+                                );
+                              },
+                                  
                               title: data?[index].name ?? '',
                               subtitle: data?[index].description ?? '',
                               status: data?[index].status ?? 0,
                               onTap: () {
-                                context.pushReplacement(
+                                context.push(
                                     '/employee_type/update_or_create',
                                     extra: {
                                       'id': data?[index].id,
                                       'title': data?[index].name,
                                       'description': data?[index].description,
                                       'status': data?[index].status,
+                                      'onSaved': loadData,
                                     });
                               },
                             );
@@ -152,6 +186,7 @@ class XList extends StatelessWidget {
   String title;
   int status;
   VoidCallback onTap;
+  VoidCallback onDelete;
 
   XList({
     super.key,
@@ -159,6 +194,7 @@ class XList extends StatelessWidget {
     required this.title,
     required this.status,
     required this.onTap,
+    required this.onDelete,
   });
 
   @override
@@ -219,6 +255,7 @@ class XList extends StatelessWidget {
                           width: 4,
                         ),
                         XBadge(
+                          onPressed: onDelete,
                           icon: const Icon(
                             CupertinoIcons.delete_solid,
                             size: 15,

@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:erp_mobile/contants/color_constants.dart';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
 import 'package:erp_mobile/models/hr/roles_model.dart';
+import 'package:erp_mobile/screens/common/delete-dialog.dart';
 import 'package:erp_mobile/screens/common/x_bage.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -58,7 +59,9 @@ class _RoleState extends State<Role> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/role/update_or_create');
+              context.push('/role/update_or_create', extra: { 
+                'onSaved' : loadData
+              });
             },
           )
         ],
@@ -96,9 +99,22 @@ class _RoleState extends State<Role> {
                   itemCount: data?.length ?? 0,
                   itemBuilder: (context, index) {
                     return XList( 
+                      onDelete: () {
+                                 deleteDialog(context, () => 
+                                  {
+                                   context.read<HrCubit>().postRes(
+                                    'hr/delete-role',
+                                    {'id': data?[index].id},
+                                    context,
+                                  ).then((value) => 
+                                    loadData() 
+                                  ) 
+                                  }
+                                );
+                              },
                       onTap: () {   
                         context.push('/role/update_or_create',  extra: {
-                          'id': 1,
+                          'id': 1, 
                           'title': data?[index].name,
                         });
                       },
@@ -121,12 +137,14 @@ class XList extends StatelessWidget {
   String title;
   int? status;
   VoidCallback onTap;
+  VoidCallback onDelete;
   XList({
     super.key,
     required this.subtitle,
     required this.title,
     this.status,
     required this.onTap,
+    required this.onDelete,
   });
 
   @override
@@ -172,21 +190,20 @@ class XList extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        InkWell(
-                          onTap: onTap,
-                          child: XBadge(
-                            icon: const Icon(
-                              Icons.edit,
-                              size: 15, 
-                            ),
-                            color: ColorConstants.primaryColor,
-                            padding: 4,
+                        XBadge(
+                          onPressed: onTap, 
+                          icon: const Icon(
+                            Icons.edit,
+                            size: 15, 
                           ),
+                          color: ColorConstants.primaryColor,
+                          padding: 4,
                         ),
                         const SizedBox(
                           width: 4,
                         ),
                         XBadge(
+                          onPressed: onDelete  ,
                           icon: const Icon(
                             CupertinoIcons.delete_solid,
                             size: 15,

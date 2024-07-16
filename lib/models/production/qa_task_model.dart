@@ -1,12 +1,12 @@
-class ProjectTaskModel {
+class QaTaskModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  ProjectTaskModel({this.status, this.message, this.data, this.meta});
+  QaTaskModel({this.status, this.message, this.data, this.meta});
 
-  ProjectTaskModel.fromJson(Map<String, dynamic> json) {
+  QaTaskModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -34,45 +34,45 @@ class ProjectTaskModel {
 
 class Data {
   int? id;
-  int? projectId;
+  int? qaId;
   int? userId;
   String? name;
-  String? description;
+  String? description; 
   String? status;
   String? priority;
+  int? createdBy;
   String? startDate;
-  String? deadline;
-  String? completionDate;
+  String? endDate;
   String? createdAt;
   String? updatedAt;
   dynamic vendorId;
 
   Data(
       {this.id,
-      this.projectId,
+      this.qaId,
       this.userId,
       this.name,
       this.description,
       this.status,
       this.priority,
+      this.createdBy,
       this.startDate,
-      this.deadline,
-      this.completionDate,
+      this.endDate,
       this.createdAt,
       this.updatedAt,
       this.vendorId});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    projectId = json['project_id'];
+    qaId = json['qa_id'];
     userId = json['user_id'];
     name = json['name'];
     description = json['description'];
     status = json['status'];
     priority = json['priority'];
+    createdBy = json['created_by'];
     startDate = json['start_date'];
-    deadline = json['deadline'];
-    completionDate = json['completion_date'];
+    endDate = json['end_date'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     vendorId = json['vendor_id'];
@@ -81,15 +81,15 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['project_id'] = this.projectId;
+    data['qa_id'] = this.qaId;
     data['user_id'] = this.userId;
     data['name'] = this.name;
     data['description'] = this.description;
     data['status'] = this.status;
     data['priority'] = this.priority;
+    data['created_by'] = this.createdBy;
     data['start_date'] = this.startDate;
-    data['deadline'] = this.deadline;
-    data['completion_date'] = this.completionDate;
+    data['end_date'] = this.endDate;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['vendor_id'] = this.vendorId;
@@ -104,7 +104,7 @@ class Meta {
   int? lastPage;
   int? from;
   int? to;
-  dynamic prevPageUrl;
+  Null? prevPageUrl;
 
   Meta(
       {this.currentPage,

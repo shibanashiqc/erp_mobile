@@ -8,9 +8,11 @@ import 'package:erp_mobile/models/sales/extra/customer_treatment_plan_model.dart
 
 class Treatments extends StatefulWidget {
   String customerId;
+  bool isCompleted = false;
   Treatments({
     super.key,
     required this.customerId,
+    this.isCompleted = false,
   });
 
   @override
@@ -21,9 +23,10 @@ class _TreatmentsState extends State<Treatments> {
   List<Data> data = [];
   bool loading = false;
 
-  @override
-  void initState() {
+  loadData()
+  {
     loading = true;
+    setState(() {});
     context
         .read<MainCubit>()
         .get('sales/customer/${widget.customerId}/treatment-plans')
@@ -36,6 +39,11 @@ class _TreatmentsState extends State<Treatments> {
         });
       }
     });
+  }
+
+  @override
+  void initState() {
+    loadData();
     super.initState();
   }
 
@@ -60,6 +68,8 @@ class _TreatmentsState extends State<Treatments> {
                     builder: (BuildContext context) {
                       return  TreatmentPlanWidget(
                         customerId: widget.customerId,
+                        onSaved: loadData, 
+                        isCompleted: widget.isCompleted ,
                       );
                     },
                   );
@@ -115,11 +125,19 @@ class _TreatmentsState extends State<Treatments> {
                             child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(children: [
-                                  Text(
-                                      data[index].items?[indexx].itemName ?? '',
-                                      style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.bold)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                          data[index].items?[indexx].itemName ?? '',
+                                          style: const TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold)),
+                                      const Spacer(), 
+                                      if (widget.isCompleted) 
+                                      data[index].items?[indexx].isCompleted == 1 ?
+                                      const Icon(Icons.check_circle, color: Colors.green) : Icon(Icons.cancel, color: Colors.red) 
+                                    ],
+                                  ),
                                   const SizedBox(height: 5),
                                   Row(
                                     mainAxisAlignment:

@@ -23,8 +23,9 @@ class _PrescriptionState extends State<Prescription> {
   List<Data> data = [];
   List<GroupByData> groupByData = [];
   bool loading = false;
-  @override
-  void initState() {
+  
+  initData()
+  {
     loading = true;
     setState(() {});
     context
@@ -51,6 +52,11 @@ class _PrescriptionState extends State<Prescription> {
         log('Prescription Data: $data');
       }
     });
+  }
+  
+  @override
+  void initState() {
+    initData();
     super.initState();
   }
 
@@ -75,6 +81,7 @@ class _PrescriptionState extends State<Prescription> {
                     builder: (BuildContext context) {
                       return AddPrescription(
                         customerId: widget.customerId,
+                        onSaved: initData, 
                       );
                     },
                   );

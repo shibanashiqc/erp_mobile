@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/x_button.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -11,8 +12,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RoleForm extends StatefulWidget {
   int? editId;
   String? title = '';
+  Function()? onSaved;
   RoleForm( 
-      {super.key, this.editId, this.title});
+      {super.key, this.editId, this.title, this.onSaved});
 
   @override
   State<RoleForm> createState() => _RoleFormState();
@@ -42,7 +44,16 @@ class _RoleFormState extends State<RoleForm> {
         label: 'Save',
         onPressed: () {
           context.read<HrCubit>().createRole({
+            'id': widget.editId ?? '', 
             'name': title,
+          }).then((value) {
+            alert(context, value.message ?? '');   
+            if (value.errors == null) {
+              if(widget.onSaved != null) {
+                widget.onSaved!();
+              } 
+              Navigator.pop(context);
+            }
           });
         },
       ),

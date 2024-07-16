@@ -295,13 +295,15 @@ final router = GoRouter(
               path: 'update_or_create',
               builder: (context, state) {
                 if (state.extra == null) return EmployeeTypeForm();
-                final extra = json.encode(state.extra);
-                final params = Params.fromJson(json.decode(extra));
+                Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
                 return EmployeeTypeForm(
-                  editId: params.id,
-                  title: params.title,
-                  description: params.description,
-                  status: params.status,
+                  editId: extra['id'],
+                  title: extra['title'],
+                  description: extra['description'],
+                  status: extra['status'],
+                  onSaved: extra['onSaved'] != null
+                      ? extra['onSaved'] as Function()
+                      : () => {},
                 );
               },
             ),
@@ -372,11 +374,10 @@ final router = GoRouter(
               path: 'update_or_create',
               builder: (context, state) {
                 if (state.extra == null) return RoleForm();
-                final extra = json.encode(state.extra);
-                final params = Params.fromJson(json.decode(extra));
+                Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
                 return RoleForm(
-                  editId: params.id,
-                  title: params.title,
+                  editId: extra['id'],
+                  title: extra['title'],
                 );
               },
             ),
@@ -424,8 +425,12 @@ final router = GoRouter(
                 path: 'create_sales_orders',
                 builder: (context, state) {
                   if (state.extra == null) return CreateSalesOrder();
+                  Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
                   return CreateSalesOrder(
-                    data: state.extra,
+                    data: extra['extra'] ?? {},
+                    onSaved: extra['onSaved'] != null
+                        ? extra['onSaved'] as Function()
+                        : () => {}, 
                   );
                 }),
 
@@ -440,10 +445,12 @@ final router = GoRouter(
                 path: 'view_sales_orders',
                 builder: (context, state) {
                   if (state.extra == null) return ViewSalesOrders();
-                  final extra = json.encode(state.extra);
-                  final params = Params.fromJson(json.decode(extra));
+                  Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
                   return ViewSalesOrders(
-                    salesOrder: params.extra,
+                    salesOrder: extra['extra'],
+                    onSaved: extra['onSaved'] != null
+                        ? extra['onSaved'] as Function()
+                        : () => {},
                   );
                 }),
 
@@ -475,16 +482,15 @@ final router = GoRouter(
                   }
 
                   if (state.extra == null) return CreateCustomers();
-                  final extra = json.encode(state.extra);
-                  final params = Params.fromJson(json.decode(extra));
+                  Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
                   // if(params.onSaved != null) {
                   //  return CreateCustomers(
                   //   onSaved: params.onSaved!,
                   // );
-                  // }
+                  // } 
                   return CreateCustomers(
-                    editId: params.id,
-                    data: params.extra,
+                    editId: extra['id'],
+                    data: json.decode(json.encode(extra['extra'])), 
                   );
                 }),
           ],

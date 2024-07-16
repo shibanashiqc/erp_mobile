@@ -7,6 +7,7 @@ import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/response_model.dart';
 import 'package:erp_mobile/models/sales/sales_extra_model.dart';
 import 'package:erp_mobile/models/sales/sales_orders_model.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/x_bage.dart';
 import 'package:erp_mobile/screens/common/x_button.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
@@ -21,7 +22,8 @@ import 'package:shimmer/shimmer.dart';
 
 class CreateSalesOrder extends StatefulWidget {
   dynamic data = {};
-  CreateSalesOrder({super.key, this.data});
+  Function()? onSaved;  
+  CreateSalesOrder({super.key, this.data, this.onSaved});
 
   @override
   State<CreateSalesOrder> createState() => _CreateSalesOrderState();
@@ -125,8 +127,6 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
   void initState() {
     super.initState();
 
-    log(widget.data.toString());
-
     if (widget.data != null) {
       customerId = widget.data['customer_id'].toString();
       editId = widget.data['id'].toString();
@@ -187,10 +187,12 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                         previousValue)
                 .toString()
           }).then((value) {
+            alert(context, value.message ?? '');
             if (value.status == 'success') {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Sales Order Created')));
-              context.pop();
+              if (widget.onSaved != null) {
+                widget.onSaved!();  
+              } 
+              context.pop(); 
             }
           });
         },

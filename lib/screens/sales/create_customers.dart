@@ -16,7 +16,7 @@ import 'package:go_router/go_router.dart';
 
 class CreateCustomers extends StatefulWidget {
   int? editId;
-  Map<String, dynamic>? data = {};
+  dynamic data = {};
   Function()? onSaved;
   CreateCustomers({super.key, this.editId, this.data, this.onSaved});
 
@@ -81,13 +81,13 @@ class _CreateCustomersState extends State<CreateCustomers>
     isLoading = true;
 
     setState(() {});
-
+ 
     if (widget.editId != null) {
       options['edit_id'] = widget.editId.toString();
       imageUrl = widget.data?['image'] ?? '';
       options['image_url'] = widget.data?['image'] ?? '';  
       // log('Image: ${options['image_url']}'); 
-      for (var key in widget.data!.keys) {
+      for (var key in widget.data!.keys) { 
         options[key] = widget.data?[key].toString() ?? '';
       }
     }

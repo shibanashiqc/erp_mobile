@@ -25,18 +25,19 @@ class Department extends StatefulWidget {
 class _DepartmentState extends State<Department> {
   List<Data>? data;
   List<Data>? dataTemp;
-  bool loading = false;
+  bool loading = true;
   
   loadData() {
     final departments = context.read<HrCubit>().getDepartments();
     loading = true;
+    setState(() { }); 
     departments.then((value) {
       setState(() { 
         data = value.data;
         dataTemp = value.data;
         loading = false;
       });
-    });
+    }); 
   }
 
   @override
@@ -161,11 +162,16 @@ class _DepartmentState extends State<Department> {
                                     'hr/delete-department',
                                     {'id': data?[index].id},
                                     context,
+                                  ).then((value) => 
+                                    loadData()
                                   );
+                                  
+                                  
+                                  
                                 });
                               },
                               onTap: () {
-                                context.pushReplacement(
+                                context.push( 
                                     '/department/update_or_create',
                                     extra: {
                                       'id': data?[index].id,
@@ -244,19 +250,17 @@ class XList extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        InkWell(
-                          onTap: onTap,
-                          child: XBadge(
-                            icon: const Icon(
-                              Icons.edit,
-                              size: 15,
-                            ),
-                            color: ColorConstants.primaryColor,
-                            padding: 4,
+                        XBadge(
+                          onPressed:  onTap,
+                          icon: const Icon(
+                            Icons.edit, 
+                            size: 15,
                           ),
+                          color: ColorConstants.primaryColor,
+                          padding: 4,
                         ),
                         const SizedBox(
-                          width: 4,
+                          width: 4,   
                         ),
                         InkWell(
                           onTap: () {

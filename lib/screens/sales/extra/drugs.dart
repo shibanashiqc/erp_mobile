@@ -30,7 +30,7 @@ class _DrugsState extends State<Drugs> {
         final CustomerDrugModel data = CustomerDrugModel.fromJson(response); 
         setState(() {
           loading = false; 
-          drugs = data.data ?? [];   
+          drugs = data.data ?? [];    
         }); 
          
     } catch (e) {
@@ -60,7 +60,9 @@ class _DrugsState extends State<Drugs> {
                     isScrollControlled: true,
                     context: context,
                     builder: (BuildContext context) {
-                      return const AddDrugWidget();
+                      return  AddDrugWidget(
+                        onSaved : initData
+                      );
                     },
                   );
                 },
@@ -83,6 +85,7 @@ class _DrugsState extends State<Drugs> {
           
           ListView.separated(
             shrinkWrap: true,
+            primary: true, 
             physics: const NeverScrollableScrollPhysics(),
             itemCount: drugs.length,
             separatorBuilder: (context, index) {
@@ -96,7 +99,7 @@ class _DrugsState extends State<Drugs> {
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.black, width: 0.1),
                       borderRadius: BorderRadius.circular(10),
-                    ),
+                    ), 
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(children: [
@@ -157,7 +160,9 @@ class _DrugsState extends State<Drugs> {
               );
             },
           ),
-        ],
+          
+          const SizedBox(height: 100),
+        ], 
       ),
     );
   }

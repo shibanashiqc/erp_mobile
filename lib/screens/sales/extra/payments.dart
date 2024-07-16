@@ -19,8 +19,9 @@ class Payments extends StatefulWidget {
 class _PaymentsState extends State<Payments> {
   List<Data> data = [];
   bool loading = true;
-  @override
-  void initState() {
+  
+  initData()
+  {
     context.read<MainCubit>().get('sales/customer/${widget.customerId}/payments').then((value) {
       final res = CustomerPatmentModel.fromJson(value);
       if (res.data != null) { 
@@ -30,6 +31,11 @@ class _PaymentsState extends State<Payments> {
         });
       } 
     });
+  }
+  
+  @override
+  void initState() {
+    initData();
     super.initState();
   }
   
@@ -53,7 +59,8 @@ class _PaymentsState extends State<Payments> {
                     builder: (BuildContext context) {
                       return  AddPayments(
                         customerId: widget.customerId, 
-                      );
+                        onSaved: initData,
+                      ); 
                     },
                   );
                 },

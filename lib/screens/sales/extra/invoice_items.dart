@@ -14,9 +14,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class InvoiceItems extends StatefulWidget {
   String customerId;
+  Function()? onSaved;
   InvoiceItems({
     super.key,
     required this.customerId,
+    this.onSaved,
   });
 
   @override
@@ -347,6 +349,9 @@ class _InvoiceItemsState extends State<InvoiceItems> {
                               if (response.errors == null) { 
                                   data = Data();
                                   items = []; 
+                                  if(widget.onSaved != null) {
+                                    widget.onSaved!();
+                                  }
                                   Navigator.pop(context); 
                               }
                             },

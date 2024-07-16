@@ -28,8 +28,9 @@ class Data {
   List<Clients>? clients;
   List<Staffs>? staffs;
   List<Projects>? projects;
+  List<QaUsers>? qaUsers;
 
-  Data({this.teams, this.clients});
+  Data({this.teams, this.clients, this.staffs, this.projects, this.users, this.qaUsers});
 
   Data.fromJson(Map<String, dynamic> json) {
     
@@ -67,6 +68,13 @@ class Data {
       });
     }
     
+    if (json['qa_users'] != null) {
+      qaUsers = <QaUsers>[];
+      json['qa_users'].forEach((v) {
+        qaUsers!.add(new QaUsers.fromJson(v));
+      });
+    }
+    
   }
 
   Map<String, dynamic> toJson() {
@@ -91,9 +99,33 @@ class Data {
       data['staffs'] = this.staffs!.map((v) => v.toJson()).toList();
     }
     
+    if (this.qaUsers != null) {
+      data['qa_users'] = this.qaUsers!.map((v) => v.toJson()).toList();
+    }
+    
     return data;
   }
 }
+
+class QaUsers {
+  int? id;
+  String? name;
+
+  QaUsers({this.id, this.name});
+
+  QaUsers.fromJson(Map<String, dynamic> json) {
+    id = json['id']; 
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    return data;
+  }
+}
+
 
 class Projects {
   int? id;

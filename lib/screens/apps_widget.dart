@@ -216,7 +216,7 @@ class _AppsWidgetState extends State<AppsWidget> {
 
           XMenu(
             height: 0.15,
-            sectionTitle: 'Medical',
+            sectionTitle: 'Medico',
             children: [
               XMenuItem(
                   icon: CupertinoIcons.doc_plaintext,

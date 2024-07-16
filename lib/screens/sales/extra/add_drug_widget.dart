@@ -7,7 +7,8 @@ import 'package:erp_mobile/screens/common/x_select.dart';
 import 'package:flutter/material.dart';
 
 class AddDrugWidget extends StatefulWidget {
-  const AddDrugWidget({super.key});
+   Function()? onSaved;
+   AddDrugWidget({super.key, this.onSaved});
 
   @override
   State<AddDrugWidget> createState() => _AddDrugWidgetState();
@@ -149,10 +150,11 @@ class _AddDrugWidgetState extends State<AddDrugWidget> {
 
                                 if (res.status == 'success') {
                                   form = Data();
+                                  if(widget.onSaved != null) widget.onSaved!();  
                                   Navigator.pop(context, true); 
                                 }
                               } catch (e) {
-                                print('Error: $e');
+                                print('Error: $e'); 
                               }
                             },
                           ),

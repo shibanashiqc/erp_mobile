@@ -11,13 +11,16 @@ import 'package:erp_mobile/screens/common/x_input.dart';
 import 'package:erp_mobile/screens/common/x_select.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddPayments extends StatefulWidget {
   String customerId;
+  Function()? onSaved;
   AddPayments({
     super.key,
     required this.customerId,
+    this.onSaved,
   });
 
   @override
@@ -123,6 +126,9 @@ class _AddPaymentsState extends State<AddPayments> {
                       context)
                   .then((value) {
                        if(value.errors == null){
+                        if (widget.onSaved != null) {
+                          widget.onSaved!();
+                        } 
                         Navigator.pop(context); 
                        } 
                   });
@@ -487,7 +493,7 @@ class _PendingInvoicesState extends State<PendingInvoices> {
                     child: ListTile(
                       title: Column(
                         children: [
-                          Row(
+                          Column( 
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(widget.invoices[index].invoiceNumber ?? '',

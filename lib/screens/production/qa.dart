@@ -7,10 +7,14 @@ import 'package:erp_mobile/models/production/production_extra_model.dart'
     as production_extra_model;
 import 'package:erp_mobile/models/production/qa_model.dart';
 import 'package:erp_mobile/models/response_model.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/x_card.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
 import 'package:erp_mobile/screens/common/x_select.dart';
+import 'package:erp_mobile/screens/production/extra/qa_report.dart';
+import 'package:erp_mobile/screens/production/extra/qa_request.dart';
+import 'package:erp_mobile/screens/production/extra/qa_task.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,40 +146,119 @@ class _QaState extends State<Qa> {
                   child: XCard(
                     child: ListTile(
                       leading: const Icon(CupertinoIcons.check_mark_circled),
-                      trailing: IconButton(
-                        onPressed: () {
-                          showCupertinoDialog(
-                            context: context,
-                            builder: (context) {
-                              return Form(
-                                onSave: loadData,
-                                projectId: projectId,
-                                form: {
-                                  'edit_id': data[index].id,
-                                  'project_id': data[index].projectId,
-                                  'team_id': data[index].teamId,
-                                  'name': data[index].name,
-                                  'description': data[index].description,
-                                  'status': data[index].status,
-                                  'priority': data[index].priority,
-                                  'start_date': data[index].startDate,
-                                  'end_date': data[index].endDate,
-                                },
+                      trailing: Column(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              showMenu(
+                                context: context,
+                                position:
+                                    const RelativeRect.fromLTRB(100, 100, 0, 0),
+                                items: [
+                                  PopupMenuItem(
+                                    child: ListTile(
+                                      title: const Text('Edit'),
+                                      onTap: () {
+                                        form = {
+                                          'edit_id': data[index].id ?? '',
+                                          'project_id':
+                                              data[index].projectId ?? '',
+                                          'team_id': data[index].teamId ?? '',
+                                          'name': data[index].name ?? '',
+                                          'description':
+                                              data[index].description ?? '',
+                                          'status': data[index].status ?? '',
+                                          'priority':
+                                              data[index].priority ?? '',
+                                          'start_date':
+                                              data[index].startDate ?? '',
+                                          'end_date': data[index].endDate ?? '',
+                                        };
+                                        showCupertinoDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Form(
+                                              onSave: loadData,
+                                              projectId: projectId,
+                                              form: form,
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    child: ListTile(
+                                      title: const Text('Report Dispute'),
+                                      onTap: () {
+                                        Navigator.pop(context); 
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ReportDisput(
+                                              qaId: data[index].id.toString(),
+                                            ),
+                                          ),
+                                        );
+                                        
+                                      },
+                                    ),
+                                  ),
+                                  
+                                  PopupMenuItem(
+                                    child: ListTile(
+                                      title: const Text('Raise a Request'),
+                                      onTap: () {
+                                        Navigator.pop(context); 
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(  
+                                            builder: (context) => QaRequest(
+                                              qaId: data[index].id.toString(),
+                                            ),
+                                          ),
+                                        );
+                                        
+                                      },
+                                    ),
+                                  ),
+                                  
+                                  
+                                  PopupMenuItem(
+                                    child: ListTile(
+                                      title: const Text('Tasks'),
+                                      onTap: () { 
+                                        Navigator.pop(context); 
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => QaTask(
+                                              qaId: data[index].id.toString(),
+                                            ),
+                                          ),
+                                        );
+                                        
+                                      },
+                                    ),
+                                  ),
+                                ],
                               );
                             },
-                          );
-                        },
-                        icon: const Icon(Icons.edit),
+                            icon: const Icon(Icons.menu),
+                          ),
+                        ],
                       ),
                       title: Row(
                         children: [
                           Text(data[index].name ?? ''),
-                          Text(' - ${data[index].projectName ?? ''}'),
+                          //Text(' - ${data[index].projectName ?? ''}'),
                         ],
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text('Project: ${data[index].projectName ?? ''}'),
+                          const SizedBox(height: 5),
                           Text('Team: ${data[index].teamName ?? ''}'),
                           const SizedBox(height: 5),
                           Text('Description: ${data[index].description ?? ''}'),
@@ -198,6 +281,8 @@ class _QaState extends State<Qa> {
     );
   }
 }
+
+
 
 class Form extends StatefulWidget {
   Map<String, dynamic> form = {};
@@ -223,7 +308,7 @@ class _FormState extends State<Form> {
     final getExtraProduction = context.read<MainCubit>().getExtraProduction();
     getExtraProduction.then((value) {
       teams = value.data!.teams ?? [];
-      projects = value.data!.projects ?? [];   
+      projects = value.data!.projects ?? [];
       setState(() {});
     });
 
@@ -232,13 +317,13 @@ class _FormState extends State<Form> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog( 
+    return AlertDialog(
       backgroundColor: Colors.grey[200],
       title: const Text('Add Qa'),
       content: SizedBox(
         width: 300,
         height: 300,
-        child: SingleChildScrollView( 
+        child: SingleChildScrollView(
           child: Column(
             children: [
               XInput(
@@ -260,8 +345,7 @@ class _FormState extends State<Form> {
                       .map((e) =>
                           DropDownItem(value: e.id.toString(), label: e.name))
                       .toList()),
-                
-                XSelect(
+              XSelect(
                   value: widget.form['project_id'].toString(),
                   label: 'Project ',
                   onChanged: (v) {
@@ -271,8 +355,7 @@ class _FormState extends State<Form> {
                   options: projects
                       .map((e) =>
                           DropDownItem(value: e.id.toString(), label: e.name))
-                      .toList()),       
-                
+                      .toList()),
               XInput(
                 initialValue: widget.form['description'].toString(),
                 label: ' Description',
@@ -321,7 +404,7 @@ class _FormState extends State<Form> {
                 hintText: 'Enter  End Date',
                 onChanged: (v) {
                   widget.form['end_date'] = v;
-                  setState(() {});  
+                  setState(() {});
                 },
               ),
             ],
@@ -338,17 +421,13 @@ class _FormState extends State<Form> {
         TextButton(
           onPressed: () {
             context
-                .read<MainCubit>() 
+                .read<MainCubit>()
                 .save(
                   widget.form,
-                  'production/update-or-create-qa', 
+                  'production/update-or-create-qa',
                 )
                 .then((value) => {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(value.message.toString()),
-                        ),
-                      ),
+                      alert(context, value.message ?? ''),
                       if (value.errors != null)
                         {
                           showDialog(
@@ -372,9 +451,13 @@ class _FormState extends State<Form> {
                           )
                         }
                       else
-                        {widget.onSave!(), Navigator.pop(context)}
+                        {
+                          widget.onSave!(),
+                          Navigator.pop(context),
+                          Navigator.pop(context)
+                        }
                     });
-    
+
             // Navigator.pop(context);
           },
           child: const Text('Save'),

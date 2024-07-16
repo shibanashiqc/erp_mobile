@@ -163,10 +163,10 @@ class MainCubit extends Cubit<MainState> {
   }
   
   Future<ProductionExtraModel> getExtraProduction(
-      {limit = 8, next = 0}) async {
+      {limit = 8, next = 0, query}) async {
     try {
       emit(const LoadingMainState());
-      var res = await _repository.get(limit, next, 'production/extra');
+      var res = await _repository.get(limit, next, 'production/extra', query: query);
       res = ProductionExtraModel.fromJson(res);
       emit(LoadedMainState());
       return res;

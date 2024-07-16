@@ -20,8 +20,10 @@ class CInvoices extends StatefulWidget {
 class _CInvoicesState extends State<CInvoices> {
   List<Data> data = [];
   bool loading = true;
-  @override
-  void initState() {
+  
+  
+  initData()
+  {
     context.read<MainCubit>().get('sales/customer/${widget.customerId}/invoices').then((value) {
       final appointmentInvoice = AppointmentInvoiceModel.fromJson(value);
       if (appointmentInvoice.data != null) { 
@@ -30,7 +32,12 @@ class _CInvoicesState extends State<CInvoices> {
           loading = false;
         });
       }
-    });
+    }); 
+  }
+  
+  @override
+  void initState() { 
+    initData(); 
     super.initState();
   }
   @override
@@ -55,6 +62,7 @@ class _CInvoicesState extends State<CInvoices> {
                   builder: (BuildContext context) {
                     return InvoiceItems(
                       customerId: widget.customerId, 
+                      onSaved: initData, 
                     );
                   },
                 );

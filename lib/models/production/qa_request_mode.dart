@@ -1,12 +1,12 @@
-class ProjectTaskModel {
+class QaRequestModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  ProjectTaskModel({this.status, this.message, this.data, this.meta});
+  QaRequestModel({this.status, this.message, this.data, this.meta});
 
-  ProjectTaskModel.fromJson(Map<String, dynamic> json) {
+  QaRequestModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -34,45 +34,27 @@ class ProjectTaskModel {
 
 class Data {
   int? id;
-  int? projectId;
-  int? userId;
-  String? name;
+  int? qaId;
+  String? subject;
   String? description;
-  String? status;
-  String? priority;
-  String? startDate;
-  String? deadline;
-  String? completionDate;
   String? createdAt;
   String? updatedAt;
   dynamic vendorId;
 
   Data(
       {this.id,
-      this.projectId,
-      this.userId,
-      this.name,
+      this.qaId,
+      this.subject,
       this.description,
-      this.status,
-      this.priority,
-      this.startDate,
-      this.deadline,
-      this.completionDate,
       this.createdAt,
       this.updatedAt,
       this.vendorId});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    projectId = json['project_id'];
-    userId = json['user_id'];
-    name = json['name'];
+    qaId = json['qa_id'];
+    subject = json['subject'];
     description = json['description'];
-    status = json['status'];
-    priority = json['priority'];
-    startDate = json['start_date'];
-    deadline = json['deadline'];
-    completionDate = json['completion_date'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     vendorId = json['vendor_id'];
@@ -81,15 +63,9 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['project_id'] = this.projectId;
-    data['user_id'] = this.userId;
-    data['name'] = this.name;
+    data['qa_id'] = this.qaId;
+    data['subject'] = this.subject;
     data['description'] = this.description;
-    data['status'] = this.status;
-    data['priority'] = this.priority;
-    data['start_date'] = this.startDate;
-    data['deadline'] = this.deadline;
-    data['completion_date'] = this.completionDate;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     data['vendor_id'] = this.vendorId;

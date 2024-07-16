@@ -51,6 +51,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Column( 
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      
+                       Image.asset('assets/images/logo.png', height: 80), 
+                       
+                       const SizedBox(height: 20), 
+                      
                       XInput(
                         onChanged: (value) {
                           context.read<LoginCubit>().changeFormValues('email', value);

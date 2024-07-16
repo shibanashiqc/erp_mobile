@@ -171,6 +171,7 @@ class _CustomerDetailState extends State<CustomerDetail>
              ),
             // const CompltedProcudure(),
              Treatments(
+               isCompleted: true,
                customerId: customerId, 
             ), 
              Payments(

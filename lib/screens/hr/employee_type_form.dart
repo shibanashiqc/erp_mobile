@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'package:erp_mobile/cubit/hr/hr_cubit.dart';
 import 'package:erp_mobile/models/response_model.dart';
+import 'package:erp_mobile/screens/common/alert.dart';
 import 'package:erp_mobile/screens/common/x_button.dart';
 import 'package:erp_mobile/screens/common/x_container.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -14,8 +15,9 @@ class EmployeeTypeForm extends StatefulWidget {
   String? title = '';
   String? description = '';
   int? status = 1;
+  Function()? onSaved;
   EmployeeTypeForm(
-      {super.key, this.editId, this.title, this.description, this.status});
+      {super.key, this.editId, this.title, this.description, this.status, this.onSaved});
 
   @override
   State<EmployeeTypeForm> createState() => _EmployeeTypeFormState();
@@ -51,14 +53,14 @@ class _EmployeeTypeFormState extends State<EmployeeTypeForm> {
         label: 'Save',
         onPressed: () {
           context.read<HrCubit>().createEmployeeType({
+            'id': widget.editId ?? '',  
             'name': title,
             'description': description, 
-            'status': status,
+            'status': status, 
           }).then((value) {  
-            if (value.status == 'error') { 
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(value.message.toString()))); 
-            }
+            alert(context, value.message ?? '');  
+            if(widget.onSaved != null) widget.onSaved!(); 
+            Navigator.pop(context, { 'status': value.status, 'message': value.message});
           });
         }, 
       ),
