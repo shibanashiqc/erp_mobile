@@ -11,6 +11,7 @@ import 'package:erp_mobile/cubit/main_cubit.dart';
 import 'package:erp_mobile/models/pos/products_model.dart' as pos;
 import 'package:erp_mobile/screens/auth/login_screen.dart';
 import 'package:erp_mobile/screens/hr/staff/staff_list.dart';
+import 'package:erp_mobile/screens/notification.dart';
 import 'package:erp_mobile/screens/pos/cart.dart';
 import 'package:erp_mobile/screens/dashboard.dart';
 import 'package:erp_mobile/screens/hr/staff/attendance.dart';
@@ -108,6 +109,13 @@ final router = GoRouter(
               name: 'qa',
               path: 'qa',   
               builder: (_, state) =>  Qa(),
+            ),
+            
+            
+            GoRoute(
+              name: 'notification',  
+              path: 'notification',   
+              builder: (_, state) => const NotificationScreen(),
             ),
             
              GoRoute( 
@@ -360,6 +368,8 @@ final router = GoRouter(
           builder: (_, state) => const Payroll(),
           routes: const [],
         ),
+        
+        
         GoRoute(
           path: 'attendance',
           builder: (_, state) => const Attendance(),
@@ -399,14 +409,19 @@ final router = GoRouter(
           ), 
             
             GoRoute(
+              name: 'staff.create_or_edit',
               path: 'update_or_create',
-              builder: (context, state) {
-                if (state.extra == null) return CreateStaff();
-                final extra = json.encode(state.extra);
-                final params = Params.fromJson(json.decode(extra));
-                return RoleForm(
-                  editId: params.id,
-                  title: params.title,
+              builder: (context, state) { 
+                if (state.extra == null) {
+                  return  CreateStaff(
+                  editId: 0, 
+                  data: const {},
+                );
+                }
+                Map<String, dynamic> extra = state.extra as Map<String, dynamic>;
+                return CreateStaff(
+                  editId: extra['id'] ?? 0,
+                  data: extra['data'], 
                 );
               },
             ),

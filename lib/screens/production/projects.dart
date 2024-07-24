@@ -212,6 +212,15 @@ class _ProjectsState extends State<Projects> {
                                 ],
                               ),
                               const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Icon(Icons.money, size: 16),
+                                  const SizedBox(width: 5),
+                                  const Text('Created By : '),
+                                  Text(data?[index].createdByName ?? ''),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
                               Container(
                                 height: 10,
                                 width: screenWidth * 0.7,

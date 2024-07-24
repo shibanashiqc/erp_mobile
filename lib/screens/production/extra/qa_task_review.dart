@@ -127,6 +127,8 @@ class _QaTaskReviewState extends State<QaTaskReview> {
                         children: [
                           Text(data[index].review ?? ''),
                           const SizedBox(height: 10),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
+                          const SizedBox(height: 10),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

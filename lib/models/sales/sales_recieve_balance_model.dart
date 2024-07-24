@@ -1,12 +1,12 @@
-class QaTaskReviewModel {
+class SalesReciveBalanceModel {
   String? status;
   String? message;
   List<Data>? data;
   Meta? meta;
 
-  QaTaskReviewModel({this.status, this.message, this.data, this.meta});
+  SalesReciveBalanceModel({this.status, this.message, this.data, this.meta});
 
-  QaTaskReviewModel.fromJson(Map<String, dynamic> json) {
+  SalesReciveBalanceModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
     if (json['data'] != null) {
@@ -34,45 +34,53 @@ class QaTaskReviewModel {
 
 class Data {
   int? id;
-  int? qaTaskId;
-  String? subject;
-  String? review;
+  int? salesOrderId;
+  int? userId;
+  String? amount;
+  String? date;
+  String? description;
+  String? paymentMethod;
+  String? balance;
   String? createdAt;
   String? updatedAt;
-  dynamic vendorId;
-  String? createdByName;
-
 
   Data(
       {this.id,
-      this.qaTaskId,
-      this.subject,
-      this.review,
+      this.salesOrderId,
+      this.userId,
+      this.amount,
+      this.date,
+      this.description,
+      this.paymentMethod,
+      this.balance,
       this.createdAt,
-      this.updatedAt,
-      this.vendorId, 
-      this.createdByName});
+      this.updatedAt});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    qaTaskId = json['qa_task_id'];
-    subject = json['subject'];
-    review = json['review'];
+    salesOrderId = json['sales_order_id'];
+    userId = json['user_id'];
+    amount = json['amount'];
+    date = json['date'];
+    description = json['description'];
+    paymentMethod = json['payment_method'];
+    balance = json['balance'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    vendorId = json['vendor_id'];
-    createdByName = json['created_by_name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['qa_task_id'] = this.qaTaskId;
-    data['subject'] = this.subject;
-    data['review'] = this.review;
+    data['sales_order_id'] = this.salesOrderId;
+    data['user_id'] = this.userId;
+    data['amount'] = this.amount;
+    data['date'] = this.date;
+    data['description'] = this.description;
+    data['payment_method'] = this.paymentMethod;
+    data['balance'] = this.balance;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['vendor_id'] = this.vendorId;
     return data;
   }
 }
@@ -84,7 +92,7 @@ class Meta {
   int? lastPage;
   int? from;
   int? to;
-  dynamic prevPageUrl;
+  Null? prevPageUrl;
 
   Meta(
       {this.currentPage,

@@ -40,9 +40,9 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
   dynamic customerId;
   dynamic salesPersonId;
   dynamic paymentTermId;
-  dynamic productId;
-  dynamic editId;
-
+  dynamic productId; 
+  dynamic editId = 0;
+ 
   String email = '';
   String phone = '';
   String orderNumber = '';
@@ -55,6 +55,7 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
   double paidAmount = 0.0;
   double balanceAmount = 0.0;
   int payTermValue = 0;
+  String paymentMode = 'Cash';
 
   calculate(discount) {
     totalAmount = salesItems
@@ -104,6 +105,8 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
         break;
       case 'notes':
         notes = state.value;
+      case 'payment_mode':
+        paymentMode = state.value;
         break;
     }
   }
@@ -128,8 +131,8 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
     super.initState();
 
     if (widget.data != null) {
-      customerId = widget.data['customer_id'].toString();
-      editId = widget.data['id'].toString();
+      customerId = widget.data['customer_id'].toString();  
+      editId = widget.data['id'].toString() == 'null' ? 0 : widget.data['id'];
       email = widget.data['email'].toString();
       phone = widget.data['phone'].toString();
     }
@@ -155,7 +158,7 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
         label: 'Save',
         onPressed: () {
           context.read<MainCubit>().createSalesOrder({
-            'id': editId,
+            'id': editId.toString(), 
             'customer_id': customerId,
             'sales_person_id': salesPersonId,
             'payment_term_id': paymentTermId,
@@ -167,6 +170,7 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
             'order_date': orderDate,
             'ship_date': shipDate,
             'notes': notes,
+            'payment_mode': paymentMode, 
             'paid_amount': paidAmount.toString(),
             'balance_amount': balanceAmount.toString(),
             'sales_order_items': salesItems.map((e) => e.toJson()).toList(),
@@ -186,8 +190,8 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                             .toStringAsFixed(0)) +
                         previousValue)
                 .toString()
-          }).then((value) {
-            alert(context, value.message ?? '');
+          },).then((value) { 
+            alert(context, value.message ?? ''); 
             if (value.status == 'success') {
               if (widget.onSaved != null) {
                 widget.onSaved!();  
@@ -625,6 +629,24 @@ class _CreateSalesOrderState extends State<CreateSalesOrder> {
                                       value: e.id.toString(), label: e.name);
                                 }).toList() ??
                                 []),
+                        
+                        // payment mode        
+                        XSelect(
+                            errorBags: errorBags,
+                            value: productId,
+                            model: 'payment_mode',
+                            onChanged: (val) {
+                              context
+                                  .read<MainCubit>()
+                                  .changeFormValues('payment_mode', val);
+                              paymentMode = val; 
+                              setState(() {});
+                            },
+                            label: 'Payment Mode', 
+                            options: ['Cash', 'Cheque', 'Bank Transfer']
+                                .map((e) {
+                                  return DropDownItem(value: e, label: e);
+                                }).toList()),
 
                         paymentTermId != null
                             ? Column(

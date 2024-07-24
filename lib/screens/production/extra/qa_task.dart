@@ -119,6 +119,8 @@ class _QaTaskState extends State<QaTask> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 5),
+                          Center(child: Text('Created By: ${data[index].createdByName ?? ''}')),
+                          const SizedBox(height: 5),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [

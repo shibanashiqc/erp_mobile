@@ -26,18 +26,18 @@ class _DepartmentState extends State<Department> {
   List<Data>? data;
   List<Data>? dataTemp;
   bool loading = true;
-  
+
   loadData() {
     final departments = context.read<HrCubit>().getDepartments();
     loading = true;
-    setState(() { }); 
+    setState(() {});
     departments.then((value) {
-      setState(() { 
+      setState(() {
         data = value.data;
         dataTemp = value.data;
         loading = false;
       });
-    }); 
+    });
   }
 
   @override
@@ -68,9 +68,8 @@ class _DepartmentState extends State<Department> {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.push('/department/update_or_create', extra: {
-                'onSaved' : initState 
-              }); 
+              context.push('/department/update_or_create',
+                  extra: {'onSaved': initState});
             },
           )
         ],
@@ -82,9 +81,9 @@ class _DepartmentState extends State<Department> {
 
         if (state is LoadedHrState) {
           log('Loaded');
-          loadData;   
-        } 
- 
+          loadData;
+        }
+
         if (state is LoadingHrState) {
           log('Loading');
         }
@@ -110,7 +109,7 @@ class _DepartmentState extends State<Department> {
                           itemCount: 10,
                           itemBuilder: (context, index) {
                             return XList(
-                              onDelete: () {}, 
+                              onDelete: () {},
                               onTap: () {},
                               title: '',
                               subtitle: '',
@@ -124,6 +123,7 @@ class _DepartmentState extends State<Department> {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       XInput(
                         onChanged: (value) {
@@ -132,7 +132,7 @@ class _DepartmentState extends State<Department> {
                                   .toLowerCase()
                                   .contains(value.toLowerCase()))
                               .toList();
-                          setState(() {}); 
+                          setState(() {});
                           if (value.isEmpty) {
                             data = dataTemp;
                             setState(() {});
@@ -142,37 +142,36 @@ class _DepartmentState extends State<Department> {
                           Icons.search,
                           color: ColorConstants.secondaryColor,
                         ),
-                        hintText: 'Search by name', 
+                        hintText: 'Search by name',
                       ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.8 ,
+                        height: MediaQuery.of(context).size.height * 0.8,
                         child: ListView.separated(
                           shrinkWrap: true,
+                          primary: false,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 10),
                           itemCount: data?.length ?? 0,
                           itemBuilder: (context, index) {
+                            // return Container();
                             return XList(
                               title: data?[index].name ?? '',
                               subtitle: data?[index].description ?? '',
                               status: data?[index].status ?? 0,
                               onDelete: () {
                                 deleteDialog(context, () {
-                                  context.read<HrCubit>().postRes(
-                                    'hr/delete-department',
-                                    {'id': data?[index].id},
-                                    context,
-                                  ).then((value) => 
-                                    loadData()
-                                  );
-                                  
-                                  
-                                  
+                                  context
+                                      .read<HrCubit>()
+                                      .postRes(
+                                        'hr/delete-department',
+                                        {'id': data?[index].id},
+                                        context,
+                                      )
+                                      .then((value) => loadData());
                                 });
                               },
                               onTap: () {
-                                context.push( 
-                                    '/department/update_or_create',
+                                context.push('/department/update_or_create',
                                     extra: {
                                       'id': data?[index].id,
                                       'title': data?[index].name,
@@ -224,10 +223,11 @@ class XList extends StatelessWidget {
                 style: const TextStyle(fontSize: 10),
               ),
             ),
-            trailing: XBadge(
-              label: status == 1 ? 'Active' : 'InActive',
-              color: status == 1 ? Colors.green : Colors.orange,
-            ),
+            // trailing: XBadge(
+            //   label: status == 1 ? 'Active' : 'InActive',
+            //   color: status == 1 ? Colors.green : Colors.orange,
+            // ),
+            
             title: Text(title,
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
@@ -251,22 +251,22 @@ class XList extends StatelessWidget {
                     Row(
                       children: [
                         XBadge(
-                          onPressed:  onTap,
+                          onPressed: onTap,
                           icon: const Icon(
-                            Icons.edit, 
+                            Icons.edit,
                             size: 15,
                           ),
                           color: ColorConstants.primaryColor,
                           padding: 4,
                         ),
                         const SizedBox(
-                          width: 4,   
+                          width: 4,
                         ),
                         InkWell(
                           onTap: () {
                             if (onDelete != null) {
                               onDelete!();
-                            } 
+                            }
                           },
                           child: XBadge(
                             icon: const Icon(
@@ -287,6 +287,7 @@ class XList extends StatelessWidget {
               ],
             ),
           ),
+        
         ],
       ),
     );

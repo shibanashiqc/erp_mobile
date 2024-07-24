@@ -261,6 +261,7 @@ class ApiClient {
     try {
       final url = '$baseURl$endpoint?per_page=$limit&page=$next';
       final token = await LoginCubit().getToken();  
+      log(token); 
       final headers = { 
         'Accept': 'application/json',
         'Authorization': 'Bearer $token'

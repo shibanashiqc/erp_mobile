@@ -119,7 +119,13 @@ class _ClientsState extends State<Clients> {
                             : Text(data[index].name![0]),
                       ),
                       title: Text(data[index].name ?? ''),
-                      subtitle: Text(data[index].address ?? ''),
+                      subtitle: Column(
+                        children: [
+                          Text(data[index].address ?? ''),
+                          const SizedBox(height: 10),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
+                        ],
+                      ),
                       onTap: () {
                         context.pushNamed('project.client_create_or_edit',
                             extra: {

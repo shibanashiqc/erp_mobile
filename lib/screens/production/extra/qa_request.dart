@@ -125,6 +125,8 @@ class _QaRequestState extends State<QaRequest> {
                         children: [
                           Text(data[index].description ?? ''),
                           const SizedBox(height: 10),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
+                          const SizedBox(height: 10),
                           Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

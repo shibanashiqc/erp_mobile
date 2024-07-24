@@ -42,6 +42,7 @@ class StaffCubit extends Cubit<StaffState> {
 
   Future<ResponseModel> createStaff(Map<String, dynamic> map, BuildContext context, {id}) async {
     try {
+     log('createStaff: $map');   
       emit(const LoadingStaffState());
       final response = await _repository.createStaff(map);
       alert(context, response.message ?? ''); 

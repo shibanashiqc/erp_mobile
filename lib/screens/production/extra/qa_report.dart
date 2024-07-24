@@ -98,7 +98,13 @@ class _ReportDisputState extends State<ReportDisput> {
                     ),
                     child: ListTile(
                       title: Text(data[index].subject ?? ''),
-                      subtitle: Text(data[index].description ?? ''),
+                      subtitle: Column(
+                        children: [
+                          Text(data[index].description ?? ''),
+                          const SizedBox(height: 10),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
+                        ],
+                      ),
                       ),
                   );
                 },

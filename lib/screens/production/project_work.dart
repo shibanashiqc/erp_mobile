@@ -160,6 +160,8 @@ class _ProjectWorkState extends State<ProjectWork> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Staff: ${data[index].staffName ?? ''}'),
+                          const SizedBox(height: 10),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
                           
                         ],
                       ),

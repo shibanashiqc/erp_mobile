@@ -52,6 +52,8 @@ class Data {
   String? teamName;
   String? clientName;
   int? tasksCount;
+  String? createdByName;
+
 
   Data(
       {this.id,
@@ -72,7 +74,8 @@ class Data {
       this.vendorId,
       this.teamName,
       this.clientName,
-      this.tasksCount});
+      this.tasksCount, 
+      this.createdByName});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -94,6 +97,7 @@ class Data {
     teamName = json['team_name'];
     clientName = json['client_name'];
     tasksCount = json['tasks_count'];
+    createdByName = json['created_by_name'];
   }
 
   Map<String, dynamic> toJson() {

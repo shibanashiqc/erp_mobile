@@ -5,6 +5,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:erp_mobile/cubit/auth/login/login_cubit.dart';
+import 'package:erp_mobile/cubit/main_cubit.dart';
+import 'package:erp_mobile/models/logs_model.dart';
 import 'package:erp_mobile/screens/apointments.dart';
 import 'package:erp_mobile/screens/apps_widget.dart';
 import 'package:erp_mobile/screens/common/x_input.dart';
@@ -132,6 +134,25 @@ class _DashbaordState extends State<Dashbaord> {
                 ),
               ),
             ),
+            
+              
+            InkWell(
+              onTap: () async {
+                context.pushNamed('notification');
+              }, 
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  radius: 15,
+                  child: Icon(
+                    Icons.notifications,
+                    size: 15,
+                  ),
+                  // backgroundImage: AssetImage('assets/images/user.png'),
+                ),
+              ),
+            ), 
+            
           ],
           // title: XInput(
           //   height: 0.05,
@@ -140,56 +161,13 @@ class _DashbaordState extends State<Dashbaord> {
           //   hintText: 'Search something...',
           //   suffixIcon: const Icon(Icons.search),
           // ),
-        ),
-        // bottomNavigationBar: NavigationBar(
-        //   height: 65,
-        //   indicatorShape: const RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.all(
-        //       Radius.circular(12),
-        //     ),
-        //   ),
-        //   onDestinationSelected: (int index) {
-        //     setState(() {
-        //       currentPageIndex = index;
-        //     });
-        //   },
-        //   indicatorColor: ColorConstants.primaryColor,
-        //   selectedIndex: currentPageIndex,
-        //   destinations: const <Widget>[
-        //     NavigationDestination(
-        //       selectedIcon: Icon(
-        //         CupertinoIcons.square_grid_2x2_fill,
-        //         // color: ColorConstants.whiteColor,
-        //       ),
-        //       icon: Icon(
-        //         CupertinoIcons.square_grid_2x2,
-        //       ),
-        //       label: 'Home',
-        //     ),
-        //     NavigationDestination(
-        //       selectedIcon: Icon(
-        //         CupertinoIcons.bell_fill,
-        //         // color: ColorConstants.whiteColor,
-        //       ),
-        //       icon: Badge(
-        //           child: Icon(
-        //         CupertinoIcons.bell,
-        //       )),
-        //       label: 'Notifications',
-        //     ),
-        //     NavigationDestination(
-        //       selectedIcon: Icon(
-        //         CupertinoIcons.person_fill,
-        //         // color: ColorConstants.whiteColor,
-        //       ),
-        //       icon: Icon(CupertinoIcons.person,
-        //           ),
-        //       label: 'Profile',
-        //     ),
-        //   ],
-        // ),
+        ), 
+    
+      
+        
 
         bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
           currentIndex: currentPageIndex,
           onTap: (index) {
             setState(() {
@@ -208,9 +186,10 @@ class _DashbaordState extends State<Dashbaord> {
             //   label: 'Apps',
             // ),
             
-            BottomNavigationBarItem(
+           BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.square_grid_2x2), 
               label: 'Menu', 
+              //activeIcon: Icon(CupertinoIcons.square_grid_2x2_fill, color: Colors.blue)  ,  
             ),
 
             BottomNavigationBarItem(
@@ -218,10 +197,10 @@ class _DashbaordState extends State<Dashbaord> {
               label: 'Appointments',
             ),
 
-            // BottomNavigationBarItem(
-            //   icon: Icon(CupertinoIcons.calendar),
-            //   label: 'Appointments',
-            // ),
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.location),   
+              label: 'Logs',
+            ),
           ],
         ),
         body: IndexedStack(
@@ -230,6 +209,7 @@ class _DashbaordState extends State<Dashbaord> {
             Home(),
             AppsWidget(), 
             Appointments(),
+            Logs(),
 
             // Center(
             //   child: Text('Messages'),
@@ -238,6 +218,61 @@ class _DashbaordState extends State<Dashbaord> {
         ),
       ),
     );
+  }
+}
+
+class Logs extends StatefulWidget {
+  const Logs({
+    super.key,
+  });
+
+  @override
+  State<Logs> createState() => _LogsState();
+}
+
+class _LogsState extends State<Logs> {
+  List<Data> logs = [];
+  @override
+  void initState() {
+    
+    context.read<MainCubit>().get('logs', limit: 10).then((value) {
+      final LogModel logsModel = LogModel.fromJson(value);
+      logs = logsModel.data ?? []; 
+      setState(() {}); 
+    });  
+      
+    super.initState();
+    log('Logs');
+  }  
+  
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container( 
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: logs.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    const Divider(), 
+                    Text(logs[index].username ?? ''), 
+                    
+                    ListTile(
+                      title: Text(logs[index].route ?? ''),
+                      subtitle: Text(logs[index].action ?? ''),
+                      trailing: Text(logs[index].createdAt ?? ''),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ), 
+        ],
+      ),
+    ); 
   }
 }
 

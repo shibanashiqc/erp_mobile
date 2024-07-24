@@ -169,6 +169,12 @@ class _StaffListState extends State<StaffList> {
                         shrinkWrap: true, 
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) =>  XCard( 
+                          onTap: (){
+                            context.pushNamed('staff.create_or_edit', extra:{
+                              'id': data[index].id,
+                              'data': data[index] 
+                            });
+                          },
                           child: Column(
                             children: [
                               Items(

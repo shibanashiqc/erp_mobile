@@ -214,10 +214,10 @@ class XList extends StatelessWidget {
                 style: const TextStyle(fontSize: 10),
               ),
             ),
-            trailing: XBadge(
-              label: status == 1 ? 'Active' : 'InActive',
-              color: status == 1 ? Colors.green : Colors.orange,
-            ),
+            // trailing: XBadge(
+            //   label: status == 1 ? 'Active' : 'InActive',
+            //   color: status == 1 ? Colors.green : Colors.orange,
+            // ),
             title: Text(title,
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),

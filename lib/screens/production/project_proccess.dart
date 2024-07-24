@@ -164,6 +164,8 @@ class _ProjectProccessState extends State<ProjectProccess> {
                         children: [
                           Text('Staff: ${data[index].staffName ?? ''}'),
                           const SizedBox(height: 5),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
+                          const SizedBox(height: 5),
                           Text(
                               'DESCRIPTION: ${data[index].processDescription ?? ''}'),
                         ],

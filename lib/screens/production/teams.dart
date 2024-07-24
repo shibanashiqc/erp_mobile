@@ -117,6 +117,10 @@ class _TeamsState extends State<Teams> {
                           )),
                           TableCell(child: Padding(
                             padding: EdgeInsets.all(8.0),
+                            child: Text('Created By'),
+                          )),
+                          TableCell(child: Padding(
+                            padding: EdgeInsets.all(8.0),
                             child: Text('Action'),
                           )),
                         ]),
@@ -129,6 +133,10 @@ class _TeamsState extends State<Teams> {
                             TableCell(child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(e.name ?? ''),
+                            )),
+                            TableCell(child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(e.createdByName ?? ''),
                             )),
                             TableCell(
                               child: Row(

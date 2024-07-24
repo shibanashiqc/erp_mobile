@@ -385,11 +385,11 @@ class SalesOrderItems {
         ? new PaymentTerm.fromJson(json['payment_term'])
         : null;
   }
-
+ 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['sales_order_id'] = this.salesOrderId;
+    //data['id'] = this.id;
+    //data['sales_order_id'] = this.salesOrderId;
     data['product_id'] = this.productId;
     data['quantity'] = this.quantity;
     data['rate'] = this.rate;

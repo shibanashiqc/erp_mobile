@@ -13,16 +13,20 @@ import 'package:iconsax/iconsax.dart';
 class XFileImage extends StatefulWidget {
   String? label;
   bool isMandatory = false;
-  void Function(dynamic)? onChanged;
+  void Function(dynamic)? onChanged; 
+  void Function(List<File>)? onChangedMultiple;
   bool allowMultiple = false;
   File? file = File('');
+  List<String> stringFileUrls = [];
   XFileImage({
     super.key,
     this.label,
     this.isMandatory = false,
     required this.onChanged,
+    this.onChangedMultiple, 
     this.allowMultiple = false,
     this.file,
+    this.stringFileUrls = const [], 
   });
 
   @override
@@ -49,6 +53,9 @@ class _XFileImageState extends State<XFileImage>
       setState(() {});
       if (widget.allowMultiple == true) {
         widget.onChanged!(_files);
+        if (widget.onChangedMultiple != null) {
+          widget.onChangedMultiple!(_files!);
+        } 
       } else {
         File file = File(result.files.single.path!);
         widget.onChanged!(file);
@@ -245,7 +252,105 @@ class _XFileImageState extends State<XFileImage>
                   // )
                 ],
               ))
-            : Container(),
+            : widget.stringFileUrls.isNotEmpty ?
+            SizedBox(
+                child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Selected File',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+
+                  ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: widget.stringFileUrls.length,
+                      separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
+                          ),
+                      itemBuilder: (context, index) {
+                        return Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.shade200,
+                                    offset: const Offset(0, 1),
+                                    blurRadius: 3,
+                                    spreadRadius: 2,
+                                  )
+                                ]),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    widget.stringFileUrls[index],
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.stringFileUrls[index],
+                                        style: const TextStyle(
+                                            fontSize: 13, color: Colors.black),
+                                      ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      // Text(
+                                      //   '${(_platformFile!.size / 1024).ceil()} KB',
+                                      //   style: TextStyle(
+                                      //       fontSize: 13,
+                                      //       color: Colors.grey.shade500),
+                                      // ),
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                      // Container(
+                                      //     height: 5,
+                                      //     clipBehavior: Clip.hardEdge,
+                                      //     decoration: BoxDecoration(
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(5),
+                                      //       color: Colors.blue.shade50,
+                                      //     ),
+                                      //     child: LinearProgressIndicator(
+                                      //       value: loadingController.value,
+                                      //     )),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            ));
+                      }),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ))
+            : const SizedBox(),
+             
         const SizedBox(height: 8),
       ],
     );

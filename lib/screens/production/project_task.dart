@@ -183,6 +183,8 @@ class _ProjectTaskState extends State<ProjectTask> {
                           Text('DEADLINE: ${data[index].deadline ?? ''}'),
                           const SizedBox(height: 5),
                           Text('COMPLETION DATE: ${data[index].completionDate ?? ''}'),
+                          const SizedBox(height: 5),
+                          Text('CREATED BY: ${data[index].createdByName ?? ''}'),
                           
                         ],
                       ),

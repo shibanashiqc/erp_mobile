@@ -10,8 +10,8 @@ class Dynamic extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(sectionTitle),
-      ),
-      body: SingleChildScrollView(child: child), 
+      ), 
+      body: child, 
     );
   }
 }

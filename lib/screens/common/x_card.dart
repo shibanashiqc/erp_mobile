@@ -12,6 +12,7 @@ class XCard extends StatelessWidget {
   bool showChild = true;
   bool isBorder = true; 
   Color color = Colors.white;
+  Function? onTap;
   XCard(
       {super.key,
       required this.child,
@@ -21,21 +22,25 @@ class XCard extends StatelessWidget {
       this.isPadding = false,
       this.showChild = true,
       this.isBorder = true,
-      this.color = Colors.white
+      this.color = Colors.white,
+      this.onTap
       });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,  
-      decoration: BoxDecoration( 
-        color: color, 
-        borderRadius: isBorder ? BorderRadius.circular(10) :  BorderRadius.circular(0),
+    return InkWell(
+      onTap: onTap != null ? () => onTap!() : null,  
+      child: Container(
+        width: width,
+        height: height,  
+        decoration: BoxDecoration( 
+          color: color, 
+          borderRadius: isBorder ? BorderRadius.circular(10) :  BorderRadius.circular(0),
+        ),
+        child: showChild ? Container(
+            padding: isPadding ? const EdgeInsets.all(8) : null,
+            child: child) : null,
       ),
-      child: showChild ? Container(
-          padding: isPadding ? const EdgeInsets.all(8) : null,
-          child: child) : null,
     ); 
   }
 }

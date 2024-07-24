@@ -263,6 +263,8 @@ class _QaState extends State<Qa> {
                           const SizedBox(height: 5),
                           Text('Description: ${data[index].description ?? ''}'),
                           const SizedBox(height: 5),
+                          Text('Created By: ${data[index].createdByName ?? ''}'),
+                          const SizedBox(height: 5), 
                           Text('Status: ${data[index].status ?? ''}'),
                           const SizedBox(height: 5),
                           Text('Priority: ${data[index].priority ?? ''}'),
@@ -336,7 +338,7 @@ class _FormState extends State<Form> {
               ),
               XSelect(
                   value: widget.form['team_id'].toString(),
-                  label: 'Tean ',
+                  label: 'Team',
                   onChanged: (v) {
                     widget.form['team_id'] = v;
                     setState(() {});

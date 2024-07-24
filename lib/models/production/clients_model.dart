@@ -44,6 +44,7 @@ class Data {
   dynamic countryId;
   dynamic branchId;
   dynamic vendorId; 
+  String? createdByName;
 
   Data(
       {this.id,
@@ -56,7 +57,8 @@ class Data {
       this.updatedAt,
       this.countryId,
       this.branchId,
-      this.vendorId});
+      this.vendorId,
+      this.createdByName});
 
   Data.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -70,6 +72,7 @@ class Data {
     countryId = json['country_id'];
     branchId = json['branch_id'];
     vendorId = json['vendor_id'];
+    createdByName = json['created_by_name'];
   }
 
   Map<String, dynamic> toJson() {
